@@ -75,10 +75,16 @@ module.exports.loop = function () {
        //SPAWN LOGIC
        if(!Game.spawns['Spawn1'].spawning && (Game.rooms['W32N56'].energyAvailable > 299)){
            // Spawn missing creeps/roles
-           if(miners.length < 3){
+           if(miners.length < 2){
+               if(Game.rooms['W32N56'].energyAvailable < 850){
                console.log('Spawning new miner!');
                Game.spawns['Spawn1'].createMinerCreep(energyA, 'miner');
-           }
+               }
+               else{
+                   Game.spawns['Spawn1'].spawnCreep([WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
+                   );
+               }
+            }
            if(upgraders.length < 4){
                console.log('Spawning new Upgrader!');
                Game.spawns['Spawn1'].createCustomCreep(energyA, 'upgrader');
