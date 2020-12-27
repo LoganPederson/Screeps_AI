@@ -15,7 +15,7 @@ var roleRepair = {
         var closestSource = creep.pos.findClosestByPath(serializedSources);
         var repair_target = creep.room.find(FIND_STRUCTURES, {
     	            filter: (structure) => {
-    	                return(structure.hits <= (structure.hitsMax *0.9) && structure.structureType === STRUCTURE_ROAD || structure.structureType === STRUCTURE_TOWER);
+    	                return(structure.hits <= (structure.hitsMax *0.9) && (structure.structureType === STRUCTURE_ROAD || structure.structureType === STRUCTURE_TOWER));
     	            }
     	        })
     	var closest_repair = creep.pos.findClosestByPath(repair_target);
@@ -38,10 +38,9 @@ var roleRepair = {
             // If repairing
     	    if(creep.memory.repairing) {
     	        // If repairTarget exists in memory
-                if(creep.memory.repairTarget) {
+                if(creep.memory.repairTarget && Game.getObjectById(creep.memory.repairTarget).hits != Game.getObjectById(creep.memory.repairTarget).hitsMax) {
                     if(creep.repair(memory_repairTarget) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(memory_repairTarget, {visualizePathStyle: {stroke: '#ffffff'}});
-                        //console.log('Moving To ' + memory_repairTarget);
                     }
                     else{
                         creep.repair(memory_repairTarget);
@@ -55,11 +54,12 @@ var roleRepair = {
                         }
                     }
                 }
-                // If repairTarget not in memory, set it
+                // If repairTarget not in memory, or target in memory has max hits set it
                 else{
-                    console.log(closest_repair);
-                    creep.memory.repairTarget = closest_repair.id;
-                }
+                    if(repair_target.length > 0){
+                        creep.memory.repairTarget = closest_repair.id;
+                    }
+                }    
                 // If no buildings with hp < 80% stop repairing
                 if(repair_target.length == 0){
                     creep.memory.repairing = false;

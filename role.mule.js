@@ -31,16 +31,12 @@ var roleMule = {
                     return(creep.memory.requestingPickup == true);
                 }
             });
-            console.log('requestingCreeps '+requestingCreeps);
             
             var closestPickup = creep.pos.findClosestByPath(requestingCreeps);
             var muleDuplicateTargets = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule' && (Game.getObjectById(creep.memory.closestPickup)) == closestPickup);
             var memory_closestPickup = Game.getObjectById(creep.memory.closestPickup);
-            console.log(muleDuplicateTargets.length);
             if(!creep.memory.closestPickup){
-                console.log(muleDuplicateTargets);
                 if(muleDuplicateTargets.length > 1){
-                    console.log('Testing mule40')
                     nextTarget = requestingCreeps;
                     nextTarget.splice(closestPickup, nextTarget[1]);
                     nextClosestTarget = creep.pos.findClosestByPath(nextTarget);
@@ -53,10 +49,8 @@ var roleMule = {
             else{
                 if(requestingCreeps.length > mules.length){
                     if(muleDuplicateTargets.length > 1){
-                        console.log(requestingCreeps);
                         nextTarget = requestingCreeps;
                         nextTarget.shift();
-                        console.log('next target after shift: '+nextTarget);
                         nextClosestTarget = nextTarget[0];
                         creep.memory.closestPickup = nextClosestTarget.id;    
                     }
@@ -88,7 +82,6 @@ var roleMule = {
                 //No work part!
                 if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
-                console.log('targets.length === 0')
             }
             }
         }
