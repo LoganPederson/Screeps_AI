@@ -139,8 +139,6 @@ module.exports.loop = function () {
             }
         }
         
-    console.log('Testing github')
-
         //Tower logic!
         for(var index in towers){
             var tower = towers[index];
