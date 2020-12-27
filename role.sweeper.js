@@ -17,13 +17,17 @@ var roleSweeper = {
         }
         // If scavaging && inv not full
         if(creep.memory.scavaging && creep.store.getUsedCapacity([RESOURCE_ENERGY]) < creep.store.getCapacity([RESOURCE_ENERGY])){
-            if(creep.withdraw(closestRuin, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+            if(closestRuin && creep.withdraw(closestRuin, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                 creep.moveTo(closestRuin);
                 creep.say('Moving To closest Ruin!');
             }
             else{
                 if(closestRuin && closestRuin.store.getUsedCapacity([RESOURCE_ENERGY]) > 0){
                     creep.withdraw(closestRuin, RESOURCE_ENERGY);
+                }
+                if(creep.memory.scavaging == true && !closestRuin){
+                    console.log('No ruin with energy in room! Ending my existance~ Goodbye');
+                    creep.suicide();
                 }
             }
         }
