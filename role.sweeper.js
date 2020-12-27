@@ -22,7 +22,7 @@ var roleSweeper = {
                 creep.say('Moving To closest Ruin!');
             }
             else{
-                if(closestRuin.store.getUsedCapacity([RESOURCE_ENERGY]) > 0){
+                if(closestRuin && closestRuin.store.getUsedCapacity([RESOURCE_ENERGY]) > 0){
                     creep.withdraw(closestRuin, RESOURCE_ENERGY);
                 }
             }
