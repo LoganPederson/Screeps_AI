@@ -85,11 +85,11 @@ module.exports.loop = function () {
                    );
                }
             }
-           if(upgraders.length < 4){
+           if(upgraders.length < 2){
                console.log('Spawning new Upgrader!');
                Game.spawns['Spawn1'].createCustomCreep(energyA, 'upgrader');
            }
-           if(mules.length < 4){
+           if(mules.length < 2){
                console.log('Spawning new Mule!');
                Game.spawns['Spawn1'].createMuleCreep(energyA, 'mule');
            }
