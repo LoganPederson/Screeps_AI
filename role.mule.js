@@ -35,7 +35,7 @@ var roleMule = {
             var closestPickup = creep.pos.findClosestByPath(requestingCreeps);
             var muleDuplicateTargets = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule' && (Game.getObjectById(creep.memory.closestPickup)) == closestPickup);
             var memory_closestPickup = Game.getObjectById(creep.memory.closestPickup);
-            if(!creep.memory.closestPickup){
+            if(!creep.memory.closestPickup && requestingCreeps.length != 0){
                 if(muleDuplicateTargets.length > 1){
                     nextTarget = requestingCreeps;
                     nextTarget.splice(closestPickup, nextTarget[1]);
@@ -58,6 +58,9 @@ var roleMule = {
                 else{
                     if(closestPickup){
                     creep.memory.closestPickup = closestPickup.id; 
+                    }
+                    else{
+                        creep.moveTo(34,25); //NO REQUESTING PICKUP CREEPS 
                     }
                 }
             }
