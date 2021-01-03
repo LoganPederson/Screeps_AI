@@ -14,8 +14,7 @@ var roleMiner = {
         var closestSource = creep.pos.findClosestByPath(serializedSources);
         var sourceMiners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner' && (Game.getObjectById(creep.memory.sourceTarget)) == closestSource);    
         if(!creep.memory.sourceTarget){
-            console.log(sourceMiners);
-            if(sourceMiners.length > 1){
+            if(sourceMiners.length >= 1){
                 nextSource = serializedSources;
                 nextSource.shift();
                 nextClosestSource = creep.pos.findClosestByPath(nextSource);
