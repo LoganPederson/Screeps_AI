@@ -70,12 +70,21 @@ module.exports.loop = function () {
         var towers = _.filter(Game.structures, (s) => s.structureType == STRUCTURE_TOWER);
         var energyA = Game.spawns['Spawn1'].room.energyAvailable;
         var energyC = Game.spawns['Spawn1'].room.energyCapacityAvailable;
-       
+
        
        //SPAWN LOGIC
+       var builders_wanted = 1;
+       var upgraders_wanted = 2;
+       var defenders_wanted = 0;
+       var signers_wanted = 0;
+       var miners_wanted = 2;
+       var mules_wanted = 3;
+       var repairs_wanted = 1;
+       var sweepers_wanted = 0;
+
        if(!Game.spawns['Spawn1'].spawning && (Game.rooms['W32N56'].energyAvailable > 299)){
-           // Spawn missing creeps/roles
-           if(miners.length < 2){
+           // MINERS priority 0
+           if(miners.length < miners_wanted){
                if(Game.rooms['W32N56'].energyAvailable < 850){
                console.log('Spawning new miner!');
                Game.spawns['Spawn1'].createMinerCreep(energyA, 'miner');
@@ -85,23 +94,23 @@ module.exports.loop = function () {
                    );
                }
             }
-           if(upgraders.length < 4){
-               console.log('Spawning new Upgrader!');
-               Game.spawns['Spawn1'].createCustomCreep(energyA, 'upgrader');
-           }
-           if(mules.length < 4){
-               console.log('Spawning new Mule!');
-               Game.spawns['Spawn1'].createMuleCreep(energyA, 'mule');
-           }
-           if(builders.length < 1){
+            else if(mules.length < mules_wanted){
+                console.log('Spawning new Mule!');
+                Game.spawns['Spawn1'].createMuleCreep(energyA, 'mule');
+            }
+            else if(upgraders.length < upgraders_wanted){
+                console.log('Spawning new Upgrader!');
+                Game.spawns['Spawn1'].createCustomCreep(energyA, 'upgrader');
+            }
+           else if(builders.length < builders_wanted){
                console.log('Spawning new Builder!');
                Game.spawns['Spawn1'].createCustomCreep(energyA, 'builder');
            }
-           if(sweepers.length < 1 && Game.spawns['Spawn1'].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0).length != 0){
+           else if(sweepers.length < 1 && Game.spawns['Spawn1'].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0).length != 0){
                console.log('Spawning new Sweeper!');
                Game.spawns['Spawn1'].createMuleCreep(energyA, 'sweeper');
            }
-           if(repairs.length < 2){
+           else if(repairs.length < repairs_wanted){
                console.log('Spawning new Repairer!!');
                Game.spawns['Spawn1'].createCustomCreep(energyA, 'repair');
            }
