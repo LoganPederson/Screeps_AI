@@ -11,6 +11,11 @@ var roleMule = {
         **/ 
         var mules = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule');
         
+        var requestingCreeps = creep.room.find(FIND_MY_CREEPS, {
+            filter: (creep) => {
+                return(creep.memory.requestingPickup == true);
+            }
+        });
         
         // If not collecting and inventory is empty - set collecting to be true
         if(!creep.memory.collecting && creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0){
@@ -26,11 +31,6 @@ var roleMule = {
         // If collecting set
         if(creep.memory.collecting) {
             // requestingCreeps = array of creeps with requestingPickup = true
-            var requestingCreeps = creep.room.find(FIND_MY_CREEPS, {
-                filter: (creep) => {
-                    return(creep.memory.requestingPickup == true);
-                }
-            });
             
             var closestPickup = creep.pos.findClosestByPath(requestingCreeps);
             var muleDuplicateTargets = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule' && (Game.getObjectById(creep.memory.closestPickup)) == closestPickup);
@@ -58,7 +58,6 @@ var roleMule = {
                 else{
                     if(closestPickup){
                         var closestMule = closestPickup.pos.findClosestByPath(muleDuplicateTargets);
-                        console.log(closestPickup);
                         if (closestMule && creep.name == closestMule.name){
                             if(creep.transfer(memory_closestPickup, RESOURCE_ENERGY, [0]) == ERR_NOT_IN_RANGE){
                                 creep.moveTo(memory_closestPickup);
@@ -80,13 +79,14 @@ var roleMule = {
                     return ((structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_TOWER)  && structure.store.getFreeCapacity(RESOURCE_ENERGY) != 0)
                 }
             });
-            if(targets.length > 0) {
+            if(targets.length > 0 && creep.store.getUsedCapacity([RESOURCE_ENERGY]) > 0) {
                 
                 if(creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             }
-            if(targets.length === 0){
+            else if(requestingCreeps.length === 0){
+                console.log('No energy, and no creeps requesting');
                 creep.moveTo(34,25);
                 
             }
