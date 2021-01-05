@@ -97,7 +97,7 @@ module.exports.loop = function () {
                    );
                }
             }
-            else if(attacker.length > 0 && defenders.length < defenders_wanted){
+            else if(attackers.length > 0 && defenders.length < defenders_wanted){
                 console.log('Spawning new Defender! Attackers present!');
                 Game.spawns['Spawn1'].createDefenderCreep(energyA, 'defender');
             }
