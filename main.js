@@ -36,7 +36,7 @@ module.exports.loop = function () {
         var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
         var defenders = _.filter(Game.creeps, (creep) => creep.memory.role == 'defender');
-        var attackers = Game.rooms['W32N56'].find(FIND_HOSTILE_CREEPS);
+        var attackers = room.find(FIND_HOSTILE_CREEPS);
         var signers = _.filter(Game.creeps, (creep) => creep.memory.role == 'signer');
         var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
         var mules = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule');
@@ -224,9 +224,10 @@ module.exports.loop = function () {
         
         
         // If hostile creeps -> 
-        if(tower.room.find(FIND_HOSTILE_CREEPS).length > 1){
+        if(tower.room.find(FIND_HOSTILE_CREEPS).length > 0){
             //Set target to closest for now and attack
-            
+            let target = tower.pos.findClosestByPath(tower.room.find(FIND_HOSTILE_CREEPS));
+            tower.attack(target);
         }
         // If no hostile creeps ->
         else{
