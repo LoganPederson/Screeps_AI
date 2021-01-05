@@ -32,13 +32,26 @@ module.exports.loop = function () {
         let room = Game.rooms[roomName];
         room.memory.sources = []
         room.memory.availableWorkers = []
+        var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
+        var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
+        var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
+        var defenders = _.filter(Game.creeps, (creep) => creep.memory.role == 'defender');
+        var attackers = room.find(FIND_HOSTILE_CREEPS);
+        var signers = _.filter(Game.creeps, (creep) => creep.memory.role == 'signer');
+        var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
+        var mules = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule');
+        var repairs = _.filter(Game.creeps, (creep) => creep.memory.role == 'repair');
+        var sweepers = _.filter(Game.creeps, (creep) => creep.memory.role == 'sweeper');
+        var towers = _.filter(Game.structures, (s) => s.structureType == STRUCTURE_TOWER);
+        var energyA = Game.spawns['Spawn1'].room.energyAvailable;
+        var energyC = Game.spawns['Spawn1'].room.energyCapacityAvailable;
         
         // Assign stage based on controllerLevel
         let controllerLevel = room.controller.level;
         if(controllerLevel < 5){
             room.memory.stage = 'Charmander'
         }
-        if(controllerLevel > 5 && controllerLevel < 7){
+        if(controllerLevel > 4 && controllerLevel < 7){
             room.memory.stage = 'Charmeleon'
         }
         if(controllerLevel > 7){
@@ -54,146 +67,186 @@ module.exports.loop = function () {
                 room.memory.sources.push(source.id);
             }
         }
+        if(room.memory.stage === 'Charmander'){
+            console.log('----------------------------Game Stage Charmander----------------------------');
+            //SPAWN LOGIC
+            var builders_wanted = 1;
+            var upgraders_wanted = 2;
+            var defenders_wanted = 1;
+            var signers_wanted = 0;
+            var miners_wanted = 4;
+            var mules_wanted = 3;
+            var repairs_wanted = 1;
+            var sweepers_wanted = 0;
+    
+           if(!Game.spawns['Spawn1'].spawning && (Game.rooms['W32N56'].energyAvailable > 299)){
+               // MINERS priority 0
+               if(miners.length < miners_wanted){
+                   if(Game.rooms['W32N56'].energyAvailable < 850){
+                   console.log('Spawning new miner!');
+                   Game.spawns['Spawn1'].createMinerCreep(energyA, 'miner');
+                   }
+                   else{
+                       Game.spawns['Spawn1'].spawnCreep([WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
+                       );
+                   }
+                }
+                else if(attackers.length > 0 && defenders.length < defenders_wanted){
+                    console.log('Spawning new Defender! Attackers present!');
+                    Game.spawns['Spawn1'].createDefenderCreep(energyA, 'defender');
+                }
+                else if(mules.length < mules_wanted){
+                    console.log('Spawning new Mule!');
+                    Game.spawns['Spawn1'].createMuleCreep(energyA, 'mule');
+                }
+                else if(upgraders.length < upgraders_wanted){
+                    console.log('Spawning new Upgrader!');
+                    Game.spawns['Spawn1'].createCustomCreep(energyA, 'upgrader');
+                }
+               else if(builders.length < builders_wanted){
+                   console.log('Spawning new Builder!');
+                   Game.spawns['Spawn1'].createCustomCreep(energyA, 'builder');
+               }
+               else if(sweepers.length < 1 && Game.spawns['Spawn1'].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0).length != 0){
+                   console.log('Spawning new Sweeper!');
+                   Game.spawns['Spawn1'].createMuleCreep(energyA, 'sweeper');
+               }
+               else if(repairs.length < repairs_wanted){
+                   console.log('Spawning new Repairer!!');
+                   Game.spawns['Spawn1'].createCustomCreep(energyA, 'repair');
+               }
+               else if(defenders.length < defenders_wanted){
+                   console.log('Spawning new Defender!!');
+                   Game.spawns['Spawn1'].spawnCreep([MOVE,ATTACK,MOVE,ATTACK,TOUGH,TOUGH], 'defender '+Game.time,{memory:{role: 'defender' }})
+               }
+           }
+        }
+
+        //CHARMELON LOGIC
+        if(room.memory.stage === 'Charmeleon'){
+            console.log('----------------------------Game Stage Charmeleon----------------------------');
+            //SPAWN LOGIC
+            var builders_wanted = 1;
+            var upgraders_wanted = 2;
+            var defenders_wanted = 1;
+            var signers_wanted = 0;
+            var miners_wanted = 2;
+            var mules_wanted = 3;
+            var repairs_wanted = 1;
+            var sweepers_wanted = 0;
+    
+           if(!Game.spawns['Spawn1'].spawning && (room.energyAvailable > 299)){
+               // MINERS priority 0
+               if(miners.length < miners_wanted){
+                   if(Game.rooms['W32N56'].energyAvailable < 850){
+                   console.log('Spawning new miner!');
+                   Game.spawns['Spawn1'].createMinerCreep(energyA, 'miner');
+                   }
+                   else{
+                       Game.spawns['Spawn1'].spawnCreep([WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
+                       );
+                   }
+                }
+                else if(attackers.length > 0 && defenders.length < defenders_wanted){
+                    console.log('Spawning new Defender! Attackers present!');
+                    Game.spawns['Spawn1'].createDefenderCreep(energyA, 'defender');
+                }
+                else if(mules.length < mules_wanted){
+                    console.log('Spawning new Mule!');
+                    Game.spawns['Spawn1'].createMuleCreep(energyA, 'mule');
+                }
+                else if(upgraders.length < upgraders_wanted){
+                    console.log('Spawning new Upgrader!');
+                    Game.spawns['Spawn1'].createCustomCreep(energyA, 'upgrader');
+                }
+               else if(builders.length < builders_wanted){
+                   console.log('Spawning new Builder!');
+                   Game.spawns['Spawn1'].createCustomCreep(energyA, 'builder');
+               }
+               else if(sweepers.length < 1 && Game.spawns['Spawn1'].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0).length != 0){
+                   console.log('Spawning new Sweeper!');
+                   Game.spawns['Spawn1'].createMuleCreep(energyA, 'sweeper');
+               }
+               else if(repairs.length < repairs_wanted){
+                   console.log('Spawning new Repairer!!');
+                   Game.spawns['Spawn1'].createCustomCreep(energyA, 'repair');
+               }
+               else if(defenders.length < defenders_wanted){
+                   console.log('Spawning new Defender!!');
+                   Game.spawns['Spawn1'].spawnCreep([MOVE,ATTACK,MOVE,ATTACK,TOUGH,TOUGH], 'defender '+Game.time,{memory:{role: 'defender' }})
+               }
+           }
+        }
     }
-    
-    
-    // Fresh Start Bootstraping AI
-    if(Game.rooms['W32N56'].memory.stage == 'Charmander'){
-        console.log('----------------------------Game Stage Charmander----------------------------');
-        var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-        var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
-        var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
-        var defenders = _.filter(Game.creeps, (creep) => creep.memory.role == 'defender');
-        var attackers = Game.rooms['W32N56'].find(FIND_HOSTILE_CREEPS);
-        var signers = _.filter(Game.creeps, (creep) => creep.memory.role == 'signer');
-        var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
-        var mules = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule');
-        var repairs = _.filter(Game.creeps, (creep) => creep.memory.role == 'repair');
-        var sweepers = _.filter(Game.creeps, (creep) => creep.memory.role == 'sweeper');
-        var towers = _.filter(Game.structures, (s) => s.structureType == STRUCTURE_TOWER);
-        var energyA = Game.spawns['Spawn1'].room.energyAvailable;
-        var energyC = Game.spawns['Spawn1'].room.energyCapacityAvailable;
-
-       
-       //SPAWN LOGIC
-       var builders_wanted = 1;
-       var upgraders_wanted = 2;
-       var defenders_wanted = 1;
-       var signers_wanted = 0;
-       var miners_wanted = 2;
-       var mules_wanted = 3;
-       var repairs_wanted = 1;
-       var sweepers_wanted = 0;
-
-       if(!Game.spawns['Spawn1'].spawning && (Game.rooms['W32N56'].energyAvailable > 299)){
-           // MINERS priority 0
-           if(miners.length < miners_wanted){
-               if(Game.rooms['W32N56'].energyAvailable < 850){
-               console.log('Spawning new miner!');
-               Game.spawns['Spawn1'].createMinerCreep(energyA, 'miner');
-               }
-               else{
-                   Game.spawns['Spawn1'].spawnCreep([WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
-                   );
-               }
-            }
-            else if(attackers.length > 0 && defenders.length < defenders_wanted){
-                console.log('Spawning new Defender! Attackers present!');
-                Game.spawns['Spawn1'].createDefenderCreep(energyA, 'defender');
-            }
-            else if(mules.length < mules_wanted){
-                console.log('Spawning new Mule!');
-                Game.spawns['Spawn1'].createMuleCreep(energyA, 'mule');
-            }
-            else if(upgraders.length < upgraders_wanted){
-                console.log('Spawning new Upgrader!');
-                Game.spawns['Spawn1'].createCustomCreep(energyA, 'upgrader');
-            }
-           else if(builders.length < builders_wanted){
-               console.log('Spawning new Builder!');
-               Game.spawns['Spawn1'].createCustomCreep(energyA, 'builder');
-           }
-           else if(sweepers.length < 1 && Game.spawns['Spawn1'].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0).length != 0){
-               console.log('Spawning new Sweeper!');
-               Game.spawns['Spawn1'].createMuleCreep(energyA, 'sweeper');
-           }
-           else if(repairs.length < repairs_wanted){
-               console.log('Spawning new Repairer!!');
-               Game.spawns['Spawn1'].createCustomCreep(energyA, 'repair');
-           }
-           else if(defenders.length < defenders_wanted){
-               console.log('Spawning new Defender!!');
-               Game.spawns['Spawn1'].spawnCreep([MOVE,ATTACK,MOVE,ATTACK,TOUGH,TOUGH], 'defender '+Game.time,{memory:{role: 'defender' }})
-           }
-       }
        
        // Run for each creep
-        for(var name in Game.creeps) {
-            //creep.suicide();
-            var creep = Game.creeps[name];
-            if(!creep.memory.creepRoom){
-                creep.memory.creepRoom = '[room W32N56]'
-            }
-            if(creep.memory.role == 'miner'){
-                roleMiner.run(creep);
-            }
-            if(creep.memory.role == 'mule'){
-                roleMule.run(creep);
-            }
-            if(creep.memory.role == 'harvester') {
-                roleHarvester.run(creep);
-            }
-            if(creep.memory.role == 'upgrader') {
-                roleUpgrader.run(creep);
-            }
-            if(creep.memory.role == 'builder') {
-                roleBuilder.run(creep);
-            }
-            if(creep.memory.role == 'defender') {
-                roleDefender.run(creep);
-            }
-            if(creep.memory.role == 'signer') {
-                roleSigner.run(creep);
-            }
-            if(creep.memory.role == 'attacker'){
-                roleAttacker.run(creep);
-            }
-            if(creep.memory.role == 'sweeper'){
-                roleSweeper.run(creep);
-            }
-            if(creep.memory.role == 'repair'){
-                roleRepair.run(creep);
-            }
+    for(var name in Game.creeps) {
+        //creep.suicide();
+        var creep = Game.creeps[name];
+        if(!creep.memory.creepRoom){
+            creep.memory.creepRoom = '[room W32N56]'
         }
-        
-        //Tower logic!
-        for(var index in towers){
-            var tower = towers[index];
-            
-            
-            // If hostile creeps -> 
-            if(tower.room.find(FIND_HOSTILE_CREEPS).length > 1){
-                //Set target to closest for now and attack
-                
-            }
-            // If no hostile creeps ->
-            else{
-                //If creeps injured, heal them!
-                let injuredCreeps = _.filter(tower.room.find(FIND_MY_CREEPS), (creep) => creep.hits < creep.hitsMax);
-                
-                if(injuredCreeps.length > 1){
-                    let closestInjured = tower.pos.findClosestByPath(injuredCreeps);
-                    tower.heal(closestInjured);
-                }
-                // If no injured friendly creeps, && no enemy creeps -> repair
-                else{
-                    repair_Target = _.filter(tower.room.find(FIND_MY_STRUCTURES), (s) => s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_RAMPART);
-                    tower.repair(tower.pos.findClosestByPath(repair_Target));
-                }
-                
-            }
+        if(creep.memory.role == 'miner'){
+            roleMiner.run(creep);
+        }
+        if(creep.memory.role == 'mule'){
+            roleMule.run(creep);
+        }
+        if(creep.memory.role == 'harvester') {
+            roleHarvester.run(creep);
+        }
+        if(creep.memory.role == 'upgrader') {
+            roleUpgrader.run(creep);
+        }
+        if(creep.memory.role == 'builder') {
+            roleBuilder.run(creep);
+        }
+        if(creep.memory.role == 'defender') {
+            roleDefender.run(creep);
+        }
+        if(creep.memory.role == 'signer') {
+            roleSigner.run(creep);
+        }
+        if(creep.memory.role == 'attacker'){
+            roleAttacker.run(creep);
+        }
+        if(creep.memory.role == 'sweeper'){
+            roleSweeper.run(creep);
+        }
+        if(creep.memory.role == 'repair'){
+            roleRepair.run(creep);
         }
     }
+        
+    //Tower logic!
+    for(var index in towers){
+        var tower = towers[index];
+        
+        
+        // If hostile creeps -> 
+        if(tower.room.find(FIND_HOSTILE_CREEPS).length > 0){
+            //Set target to closest for now and attack
+            let target = tower.pos.findClosestByPath(tower.room.find(FIND_HOSTILE_CREEPS));
+            tower.attack(target);
+        }
+        // If no hostile creeps ->
+        else{
+            //If creeps injured, heal them!
+            let injuredCreeps = _.filter(tower.room.find(FIND_MY_CREEPS), (creep) => creep.hits < creep.hitsMax);
+            
+            if(injuredCreeps.length > 1){
+                let closestInjured = tower.pos.findClosestByPath(injuredCreeps);
+                tower.heal(closestInjured);
+            }
+            // If no injured friendly creeps, && no enemy creeps -> repair
+            else{
+                repair_Target = _.filter(tower.room.find(FIND_MY_STRUCTURES), (s) => s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_RAMPART);
+                tower.repair(tower.pos.findClosestByPath(repair_Target));
+            }
+            
+        }
+    }
+
 };
 
 
