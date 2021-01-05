@@ -9,6 +9,8 @@ var roleDefender = require('role.defender');
 var prototypeMinerSpawn = require('prototype.minerBody')();
 var prototypeMuleSpawn = require('prototype.muleBody')();
 var prototypeCustomSpawn = require('prototype.customCreep')();
+var prototypeDefenderSpawn = require('prototype.evenDefender')();
+
 //
 //Run Each tick
 module.exports.loop = function () {
@@ -62,7 +64,7 @@ module.exports.loop = function () {
         var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
         var defenders = _.filter(Game.creeps, (creep) => creep.memory.role == 'defender');
-        var attackers = _.filter(Game.creeps, (creep) => creep.memory.role == 'attacker');
+        var attackers = Game.rooms['W32N56'].find(FIND_HOSTILE_CREEPS);
         var signers = _.filter(Game.creeps, (creep) => creep.memory.role == 'signer');
         var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
         var mules = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule');
@@ -94,6 +96,10 @@ module.exports.loop = function () {
                    Game.spawns['Spawn1'].spawnCreep([WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
                    );
                }
+            }
+            else if(attacker.length > 0 && defenders.length < defenders_wanted){
+                console.log('Spawning new Defender! Attackers present!');
+                Game.spawns['Spawn1'].createDefenderCreep(energyA, 'defender');
             }
             else if(mules.length < mules_wanted){
                 console.log('Spawning new Mule!');
