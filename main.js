@@ -5,6 +5,7 @@ var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 var roleSweeper = require('role.sweeper');
 var roleRepair = require('role.repair');
+var roleDefender = require('role.defender');
 var prototypeMinerSpawn = require('prototype.minerBody')();
 var prototypeMuleSpawn = require('prototype.muleBody')();
 var prototypeCustomSpawn = require('prototype.customCreep')();
@@ -75,7 +76,7 @@ module.exports.loop = function () {
        //SPAWN LOGIC
        var builders_wanted = 1;
        var upgraders_wanted = 2;
-       var defenders_wanted = 0;
+       var defenders_wanted = 1;
        var signers_wanted = 0;
        var miners_wanted = 2;
        var mules_wanted = 3;
@@ -114,10 +115,15 @@ module.exports.loop = function () {
                console.log('Spawning new Repairer!!');
                Game.spawns['Spawn1'].createCustomCreep(energyA, 'repair');
            }
+           else if(defenders.length < defenders_wanted){
+               console.log('Spawning new Defender!!');
+               Game.spawns['Spawn1'].spawnCreep([MOVE,ATTACK,MOVE,ATTACK,TOUGH,TOUGH], 'defender '+Game.time,{memory:{role: 'defender' }})
+           }
        }
        
        // Run for each creep
         for(var name in Game.creeps) {
+            //creep.suicide();
             var creep = Game.creeps[name];
             if(!creep.memory.creepRoom){
                 creep.memory.creepRoom = '[room W32N56]'
