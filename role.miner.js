@@ -45,7 +45,13 @@ var roleMiner = {
                 var pickupTarget = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
                     filter: { memory: { role: 'mule' } }
                 });
-                creep.transfer(pickupTarget,RESOURCE_ENERGY);
+                var containerTarget = _.filter(creep.pos.findClosestByRange(FIND_STRUCTURES), (s) => s.structureType == STRUCTURE_CONTAINER);
+                if(creep.transfer(containerTarget,RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(containerTarget)
+                }
+                else {
+                    creep.transfer(pickupTarget, RESOURCE_ENERGY);
+                }
             }
             // Choose Source and Harvest
             else {
