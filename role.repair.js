@@ -15,7 +15,7 @@ var roleRepair = {
         var closestSource = creep.pos.findClosestByPath(serializedSources);
         var repair_target = creep.room.find(FIND_STRUCTURES, {
     	            filter: (structure) => {
-    	                return(structure.hits <= (structure.hitsMax *0.9) && (structure.structureType === STRUCTURE_ROAD || structure.structureType === STRUCTURE_TOWER));
+    	                return(structure.hits <= (structure.hitsMax *0.9) && (structure.structureType === STRUCTURE_ROAD || structure.structureType === STRUCTURE_TOWER || structure.structureType === STRUCTURE_CONTAINER));
     	            }
     	        })
     	var closest_repair = creep.pos.findClosestByPath(repair_target);
