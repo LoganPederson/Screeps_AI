@@ -155,7 +155,6 @@ module.exports.loop = function () {
         
                 if(!Game.spawns[spawn].spawning && (room.energyAvailable > 299)){
                     // MINERS priority 0
-                    console.log(miners.length)
                     if(miners.length < miners_wanted){
                         if(room.energyAvailable < 850){
                         console.log('Spawning new miner!');

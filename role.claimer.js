@@ -15,10 +15,8 @@ var roleClaimer = {
         //IF CREEP NOT IN CLAIM ROOM -> MOVE TO BLUE FLAG
         if(creep.pos != blueFlag.pos && !creep.memory.correctRoom){
             let flagRoom = blueFlag.pos.roomName
-            console.log(creep.pos.roomName + ' ' + blueFlag.pos.roomName)
             creep.moveTo(blueFlag);
-            //console.log(creep.room.name + ' ' + creep.memory.claimRoom)
-            console.log('claimer moving to claimroom')
+            console.log('claimer moving to claimRoom')
         }
         //IF CREEP IN CLAIM ROOM -> CLAIM CONTROLLER
         if(creep.pos.x === blueFlag.pos.x && creep.pos.y === blueFlag.pos.y){
@@ -36,7 +34,6 @@ var roleClaimer = {
             else if(creep.signController(creep.room.controller, 'Serendipity!') === ERR_NOT_IN_RANGE && creep.room.controller.sign.text != 'Serendipity!'){
                 creep.moveTo(creep.room.controller);
                 console.log('Claimer signing!')
-                console.log(creep.room.controller.sign.text)
             }
             //IF ABOVE DONE, UPGRADE CONTROLLER
             else{

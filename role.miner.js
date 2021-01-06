@@ -33,6 +33,7 @@ var roleMiner = {
         var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER);
         var closest_container = creep.pos.findClosestByPath(containers);
         
+        //IF MULES
         if(mules.length > 0){
             //IF REQUESTING PICKUP BUT INVENTORY EMPTY -> START MINING
     	    if(creep.memory.requestingPickup && creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
@@ -51,12 +52,7 @@ var roleMiner = {
                     filter: { memory: { role: 'mule' } }
                 });
                 var containerTarget = _.filter(creep.pos.findClosestByRange(FIND_STRUCTURES), (s) => s.structureType == STRUCTURE_CONTAINER);
-                if(creep.transfer(containerTarget,RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(containerTarget)
-                }
-                else {
-                    creep.transfer(pickupTarget, RESOURCE_ENERGY);
-                }
+                creep.transfer(pickupTarget, RESOURCE_ENERGY);
             }
             //IF CONTAINER(S) PRESENT -> DROP INTO CONTAINER
             else if(creep.memory.requestingPickup && containers.length > 0){
@@ -79,17 +75,8 @@ var roleMiner = {
             }
         }
         
-        // NO MULES IN ROOM LOGIC
+        // NO MULES IN ROOM 
         else {
-            // var availableSources = creep.room.memory.sources;
-            // var serializedSources = []
-            // var i = 0;
-            // for(let everySource in availableSources){
-            //     serializedSources.push(Game.getObjectById(availableSources[i]))
-            //     var i = i+1;
-            // }
-            //console.log(serializedSources);
-            //console.log('Available Sources: '+availableSources);
             if(creep.memory.requestingPickup && creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
                 creep.memory.requestingPickup = false;
                 creep.say('Mining')
