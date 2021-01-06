@@ -23,6 +23,12 @@ var roleExpansionBuilder = {
         //Make sure we didn't get lost
         if(creep.memory.correctRoom){
             
+            
+            //IF SPAWN BUILT -> SET ROLE BUILDER
+            if(creep.room.find(FIND_MY_SPAWNS).length > 0){
+                creep.memory.role = 'builder';
+                console.log(creep.name+' has detected spawn is built in expansion room and is converting to role: builder');
+            }
             // If Building & no energy -> Stop Building
     	    if(creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
                 creep.memory.building = false;

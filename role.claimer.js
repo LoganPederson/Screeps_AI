@@ -25,13 +25,43 @@ var roleClaimer = {
             creep.memory.correctRoom = true;
         }
         
+        //IF IN CORRECT ROOM
         if(creep.memory.correctRoom){
+            //CLAIM CONTROLLER
             if(creep.claimController(creep.room.controller) === ERR_NOT_IN_RANGE){
                 creep.moveTo(blueFlag.room.controller);
                 console.log('Claimer moving to controller to claim!')
             }
-            else if(creep.signController(creep.room.controller, 'Serendipity!') === ERR_NOT_IN_RANGE){
+            //SIGN CONTROLLER
+            else if(creep.signController(creep.room.controller, 'Serendipity!') === ERR_NOT_IN_RANGE && creep.room.controller.sign.text != 'Serendipity!'){
                 creep.moveTo(creep.room.controller);
+                console.log('Claimer signing!')
+                console.log(creep.room.controller.sign.text)
+            }
+            //IF ABOVE DONE, UPGRADE CONTROLLER
+            else{
+                let sources = creep.room.find(FIND_SOURCES);
+                //IF INVENTORY EMPTY -> COLLECT ENERGY
+                if(creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0){
+                    creep.memory.collecting = true;
+                }
+                //IF INVENTORY FULL -> STOP COLLECTING
+                if(creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0){
+                    creep.memory.collecting = false;
+                }
+                
+                //IF COLLECTING
+                if(creep.memory.collecting){
+                    if(creep.harvest(sources[0]) === ERR_NOT_IN_RANGE){
+                        creep.moveTo(sources[0]);
+                    }
+                }
+                //IF NOT COLLECTING -> UPGRADE
+                else{
+                    if(creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE){
+                        creep.moveTo(creep.room.controller);
+                    }
+                }
             }
         }
     }
