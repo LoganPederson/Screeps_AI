@@ -85,7 +85,6 @@ var roleMule = {
                 }
             }
             else if(requestingCreeps.length === 0){
-                console.log('No energy, and no creeps requesting');
                 creep.moveTo(34,25);
                 
             }

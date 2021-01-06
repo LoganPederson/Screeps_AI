@@ -14,7 +14,9 @@ var roleBuilder = {
         }
         var closestSource = creep.pos.findClosestByPath(serializedSources);
         
-        //Finding closest construction site
+        //VARIABLES
+        var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER);
+        var closest_container = creep.pos.findClosestByPath(containers);
         
         //Make sure we didn't get lost
         if(creep.memory.creepRoom){
@@ -45,7 +47,6 @@ var roleBuilder = {
                 if(targets.length > 0) {
                     if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
-                        //console.log(targets.length);
                     }
                 }
                 if(targets.length == 0){
@@ -56,22 +57,14 @@ var roleBuilder = {
     	    else {
     	        if(creep.store.getUsedCapacity(RESOURCE_ENERGY) < creep.store.getCapacity(RESOURCE_ENERGY)){
         	        var sources = creep.room.find(FIND_SOURCES);
-                    if(creep.harvest(closestSource) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(closestSource, {visualizePathStyle: {stroke: '#ffaa00'}});
-                        creep.harvest(closestSource);
+                    if(creep.withdraw(closest_container,RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(closest_container)
                     }
     	        }
     	        if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == creep.store.getCapacity(RESOURCE_ENERGY)){
     	            creep.moveTo(29,29);
     	        }
     	    }
-        }
-        else{
-            creep.memory.targetRoom = 'W32N56';
-            creep.memory.building = 'false';
-            console.log('Creep in wrong room!')
-            console.log('Creep.room == '+ creep.room + ' Creep.memory.creepRoom ==' + creep.memory.creepRoom);
-            creep.store.getUsedCapacity(RESOURCE_ENERGY)
         }
 	}
 };

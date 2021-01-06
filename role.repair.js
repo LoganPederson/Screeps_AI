@@ -19,7 +19,9 @@ var roleRepair = {
     	            }
     	        })
     	var closest_repair = creep.pos.findClosestByPath(repair_target);
-    	var memory_repairTarget = Game.getObjectById(creep.memory.repairTarget);
+        var memory_repairTarget = Game.getObjectById(creep.memory.repairTarget);
+        var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER);
+        var closest_container = creep.pos.findClosestByPath(containers);
         //Finding closest construction site
         
         //Make sure we didn't get lost
@@ -69,10 +71,8 @@ var roleRepair = {
     	    else {
     	        // If inventory not empty -> Go fill it
     	        if(creep.store.getUsedCapacity(RESOURCE_ENERGY) < creep.store.getCapacity(RESOURCE_ENERGY)){
-        	        var sources = creep.room.find(FIND_SOURCES);
-                    if(creep.harvest(closestSource) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(closestSource, {visualizePathStyle: {stroke: '#ffaa00'}});
-                        creep.harvest(closestSource);
+        	        if(creep.withdraw(closest_container,RESOURCE_ENERGY) === ERR_NOT_IN_RANGE){
+                        creep.moveTo(closest_container);
                     }
     	        }
     	        if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == creep.store.getCapacity(RESOURCE_ENERGY)){
