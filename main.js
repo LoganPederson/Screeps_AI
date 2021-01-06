@@ -25,7 +25,7 @@ module.exports.loop = function () {
     // Run for each Creep
     for(let creepName in Game.creeps) {
         var creep = Game.creeps[creepName];
-        creep.memory.creepRoom = 'W32N56';
+        creep.memory.creepRoom = creep.room.name;
     }
     //Run for each Room
     for(let roomName in Game.rooms){
@@ -45,7 +45,10 @@ module.exports.loop = function () {
         var towers = _.filter(Game.structures, (s) => s.structureType == STRUCTURE_TOWER);
         var energyA = Game.spawns['Spawn1'].room.energyAvailable;
         var energyC = Game.spawns['Spawn1'].room.energyCapacityAvailable;
-        
+        var spawners = _.filter(room.find(FIND_MY_STRUCTURES), (s) => s.structureType == STRUCTURE_SPAWN);
+        var spawn = spawners[0].name
+
+
         // Assign stage based on controllerLevel
         let controllerLevel = room.controller.level;
         if(controllerLevel < 5){
