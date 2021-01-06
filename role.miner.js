@@ -30,7 +30,7 @@ var roleMiner = {
         //VARIABLES
         var mules = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule');
         var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
-        var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER && s.store.getUsedCapacity([RESOURCE_ENERGY]) != 0);
+        var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER);
         var closest_container = creep.pos.findClosestByPath(containers);
         
         if(mules.length > 0){
