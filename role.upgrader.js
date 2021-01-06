@@ -18,19 +18,11 @@ var roleUpgrader = {
             }
         }
         if(!creep.memory.upgrading && creep.store.getFreeCapacity() != 0) {
-            var availableSources = creep.room.memory.sources;
-            var serializedSources = []
-            var i = 0;
-            for(let everySource in availableSources){
-                serializedSources.push(Game.getObjectById(availableSources[i]))
-                var i = i+1;
-            }
-            var closestSource = creep.pos.findClosestByPath(serializedSources);
-            if(creep.harvest((closestSource) == ERR_NOT_IN_RANGE)) {
-                creep.moveTo(closestSource, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
-            if(creep.harvest(closestSource) != ERR_NOT_IN_RANGE){
-                creep.harvest(closestSource);
+            var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER);
+            var closest_container = creep.pos.findClosestByPath(containers);
+
+            if(creep.withdraw(closest_container,RESOURCE_ENERGY) === ERR_NOT_IN_RANGE){
+                creep.moveTo(closest_container);
             }
         }
 	}
