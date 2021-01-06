@@ -32,6 +32,8 @@ module.exports.loop = function () {
         let room = Game.rooms[roomName];
         room.memory.sources = []
         room.memory.availableWorkers = []
+        var spawners = _.filter(room.find(FIND_MY_STRUCTURES), (s) => s.structureType == STRUCTURE_SPAWN);
+        var spawn = spawners[0].name
         var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
         var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
@@ -43,10 +45,8 @@ module.exports.loop = function () {
         var repairs = _.filter(Game.creeps, (creep) => creep.memory.role == 'repair');
         var sweepers = _.filter(Game.creeps, (creep) => creep.memory.role == 'sweeper');
         var towers = _.filter(Game.structures, (s) => s.structureType == STRUCTURE_TOWER);
-        var energyA = Game.spawns['Spawn1'].room.energyAvailable;
-        var energyC = Game.spawns['Spawn1'].room.energyCapacityAvailable;
-        var spawners = _.filter(room.find(FIND_MY_STRUCTURES), (s) => s.structureType == STRUCTURE_SPAWN);
-        var spawn = spawners[0].name
+        var energyA = Game.spawns[spawn].room.energyAvailable;
+        var energyC = Game.spawns[spawn].room.energyCapacityAvailable;
 
 
         // Assign stage based on controllerLevel
@@ -82,45 +82,45 @@ module.exports.loop = function () {
             var repairs_wanted = 1;
             var sweepers_wanted = 0;
     
-           if(!Game.spawns['Spawn1'].spawning && (Game.rooms['W32N56'].energyAvailable > 299)){
+           if(!Game.spawns[spawn].spawning && (room.energyAvailable > 299)){
                // MINERS priority 0
                if(miners.length < miners_wanted){
-                   if(Game.rooms['W32N56'].energyAvailable < 850){
+                   if(room.energyAvailable < 850){
                    console.log('Spawning new miner!');
-                   Game.spawns['Spawn1'].createMinerCreep(energyA, 'miner');
+                   Game.spawns[spawn].createMinerCreep(energyA, 'miner');
                    }
                    else{
-                       Game.spawns['Spawn1'].spawnCreep([WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
+                       Game.spawns[spawn].spawnCreep([WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
                        );
                    }
                 }
                 else if(attackers.length > 0 && defenders.length < defenders_wanted){
                     console.log('Spawning new Defender! Attackers present!');
-                    Game.spawns['Spawn1'].createDefenderCreep(energyA, 'defender');
+                    Game.spawns[spawn].createDefenderCreep(energyA, 'defender');
                 }
                 else if(mules.length < mules_wanted){
                     console.log('Spawning new Mule!');
-                    Game.spawns['Spawn1'].createMuleCreep(energyA, 'mule');
+                    Game.spawns[spawn].createMuleCreep(energyA, 'mule');
                 }
                 else if(upgraders.length < upgraders_wanted){
                     console.log('Spawning new Upgrader!');
-                    Game.spawns['Spawn1'].createCustomCreep(energyA, 'upgrader');
+                    Game.spawns[spawn].createCustomCreep(energyA, 'upgrader');
                 }
                else if(builders.length < builders_wanted){
                    console.log('Spawning new Builder!');
-                   Game.spawns['Spawn1'].createCustomCreep(energyA, 'builder');
+                   Game.spawns[spawn].createCustomCreep(energyA, 'builder');
                }
-               else if(sweepers.length < 1 && Game.spawns['Spawn1'].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0).length != 0){
+               else if(sweepers.length < 1 && Game.spawns[spawn].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0).length != 0){
                    console.log('Spawning new Sweeper!');
-                   Game.spawns['Spawn1'].createMuleCreep(energyA, 'sweeper');
+                   Game.spawns[spawn].createMuleCreep(energyA, 'sweeper');
                }
                else if(repairs.length < repairs_wanted){
                    console.log('Spawning new Repairer!!');
-                   Game.spawns['Spawn1'].createCustomCreep(energyA, 'repair');
+                   Game.spawns[spawn].createCustomCreep(energyA, 'repair');
                }
                else if(defenders.length < defenders_wanted){
                    console.log('Spawning new Defender!!');
-                   Game.spawns['Spawn1'].spawnCreep([MOVE,ATTACK,MOVE,ATTACK,TOUGH,TOUGH], 'defender '+Game.time,{memory:{role: 'defender' }})
+                   Game.spawns[spawn].spawnCreep([MOVE,ATTACK,MOVE,ATTACK,TOUGH,TOUGH], 'defender '+Game.time,{memory:{role: 'defender' }})
                }
            }
         }
@@ -138,45 +138,45 @@ module.exports.loop = function () {
             var repairs_wanted = 1;
             var sweepers_wanted = 0;
     
-           if(!Game.spawns['Spawn1'].spawning && (room.energyAvailable > 299)){
+           if(!Game.spawns[spawn].spawning && (room.energyAvailable > 299)){
                // MINERS priority 0
                if(miners.length < miners_wanted){
-                   if(Game.rooms['W32N56'].energyAvailable < 850){
+                   if(room.energyAvailable < 850){
                    console.log('Spawning new miner!');
-                   Game.spawns['Spawn1'].createMinerCreep(energyA, 'miner');
+                   Game.spawns[spawn].createMinerCreep(energyA, 'miner');
                    }
                    else{
-                       Game.spawns['Spawn1'].spawnCreep([WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
+                       Game.spawns[spawn].spawnCreep([WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
                        );
                    }
                 }
                 else if(attackers.length > 0 && defenders.length < defenders_wanted){
                     console.log('Spawning new Defender! Attackers present!');
-                    Game.spawns['Spawn1'].createDefenderCreep(energyA, 'defender');
+                    Game.spawns[spawn].createDefenderCreep(energyA, 'defender');
                 }
                 else if(mules.length < mules_wanted){
                     console.log('Spawning new Mule!');
-                    Game.spawns['Spawn1'].createMuleCreep(energyA, 'mule');
+                    Game.spawns[spawn].createMuleCreep(energyA, 'mule');
                 }
                 else if(upgraders.length < upgraders_wanted){
                     console.log('Spawning new Upgrader!');
-                    Game.spawns['Spawn1'].createCustomCreep(energyA, 'upgrader');
+                    Game.spawns[spawn].createCustomCreep(energyA, 'upgrader');
                 }
                else if(builders.length < builders_wanted){
                    console.log('Spawning new Builder!');
-                   Game.spawns['Spawn1'].createCustomCreep(energyA, 'builder');
+                   Game.spawns[spawn].createCustomCreep(energyA, 'builder');
                }
-               else if(sweepers.length < 1 && Game.spawns['Spawn1'].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0).length != 0){
+               else if(sweepers.length < 1 && Game.spawns[spawn].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0).length != 0){
                    console.log('Spawning new Sweeper!');
-                   Game.spawns['Spawn1'].createMuleCreep(energyA, 'sweeper');
+                   Game.spawns[spawn].createMuleCreep(energyA, 'sweeper');
                }
                else if(repairs.length < repairs_wanted){
                    console.log('Spawning new Repairer!!');
-                   Game.spawns['Spawn1'].createCustomCreep(energyA, 'repair');
+                   Game.spawns[spawn].createCustomCreep(energyA, 'repair');
                }
                else if(defenders.length < defenders_wanted){
                    console.log('Spawning new Defender!!');
-                   Game.spawns['Spawn1'].spawnCreep([MOVE,ATTACK,MOVE,ATTACK,TOUGH,TOUGH], 'defender '+Game.time,{memory:{role: 'defender' }})
+                   Game.spawns[spawn].spawnCreep([MOVE,ATTACK,MOVE,ATTACK,TOUGH,TOUGH], 'defender '+Game.time,{memory:{role: 'defender' }})
                }
            }
         }
@@ -187,7 +187,7 @@ module.exports.loop = function () {
         //creep.suicide();
         var creep = Game.creeps[name];
         if(!creep.memory.creepRoom){
-            creep.memory.creepRoom = '[room W32N56]'
+            creep.memory.creepRoom = creep.room.name
         }
         if(creep.memory.role == 'miner'){
             roleMiner.run(creep);
