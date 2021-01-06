@@ -118,7 +118,7 @@ module.exports.loop = function () {
                     console.log('Spawning new Builder!');
                     Game.spawns[spawn].createCustomCreep(energyA, 'builder');
                 }
-                else if(expanders.length < expanders_wanted && room.find(FIND_MY_CONSTRUCTION_SITES).length > 0){
+                else if(expanders.length < expanders_wanted && room.find(FIND_MY_CONSTRUCTION_SITES).length > 0 && blueFlags.length >0){
                     console.log('Spawning new Expander!');
                     Game.spawns[spawn].createCustomCreep(energyA, 'expander');
                 }
