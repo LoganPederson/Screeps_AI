@@ -74,6 +74,8 @@ module.exports.loop = function () {
                     room.memory.sources.push(source.id);
                 }
             }
+
+            // CHARMANDER
             if(room.memory.stage === 'Charmander'){
                 console.log(room.name + ' Game Stage: Charmander');
                 //SPAWN LOGIC
@@ -82,7 +84,7 @@ module.exports.loop = function () {
                 var upgraders_wanted = 2;
                 var defenders_wanted = 1;
                 var claimers_wanted = 1;
-                var miners_wanted = 4;
+                var miners_wanted = 2;
                 var mules_wanted = 3;
                 var repairs_wanted = 1;
                 var sweepers_wanted = 0;
@@ -104,13 +106,13 @@ module.exports.loop = function () {
                     console.log('Spawning new Defender! Attackers present!');
                     Game.spawns[spawn].createDefenderCreep(energyA, 'defender');
                 }
-                else if(mules.length < mules_wanted){
-                    console.log('Spawning new Mule!');
-                    Game.spawns[spawn].createMuleCreep(energyA, 'mule');
-                }
                 else if(upgraders.length < upgraders_wanted){
                     console.log('Spawning new Upgrader!');
                     Game.spawns[spawn].createCustomCreep(energyA, 'upgrader');
+                }
+                else if(mules.length < mules_wanted){
+                    console.log('Spawning new Mule!');
+                    Game.spawns[spawn].createMuleCreep(energyA, 'mule');
                 }
                 else if(builders.length < builders_wanted){
                     console.log('Spawning new Builder!');

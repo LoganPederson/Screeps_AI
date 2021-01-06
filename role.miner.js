@@ -16,7 +16,7 @@ var roleMiner = {
         
         
         if(!creep.memory.sourceTarget){
-            if(sourceMiners.length > 0){
+            if(sourceMiners.length > availableSources.length){
                 nextSource = serializedSources;
                 nextSource.pop();
                 nextClosestSource = creep.pos.findClosestByPath(nextSource);
