@@ -16,7 +16,7 @@ var roleMiner = {
         
         
         if(!creep.memory.sourceTarget){
-            if(sourceMiners.length > availableSources.length){
+            if(sourceMiners.length > availableSources.length && availableSources.length != 1){
                 nextSource = serializedSources;
                 nextSource.pop();
                 nextClosestSource = creep.pos.findClosestByPath(nextSource);
@@ -51,7 +51,7 @@ var roleMiner = {
                 var pickupTarget = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
                     filter: { memory: { role: 'mule' } }
                 });
-                var containerTarget = _.filter(creep.pos.findClosestByRange(FIND_STRUCTURES), (s) => s.structureType == STRUCTURE_CONTAINER);
+                //var containerTarget = _.filter(creep.pos.findClosestByRange(FIND_STRUCTURES), (s) => s.structureType == STRUCTURE_CONTAINER);
                 creep.transfer(pickupTarget, RESOURCE_ENERGY);
             }
             //IF CONTAINER(S) PRESENT -> DROP INTO CONTAINER

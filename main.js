@@ -158,7 +158,7 @@ module.exports.loop = function () {
                 if(!Game.spawns[spawn].spawning && (room.energyAvailable > 299)){
                     // MINERS priority 0
                     if(miners.length < miners_wanted){
-                        if(room.energyAvailable < 850){
+                        if(room.energyAvailable < 850 && miners.length === 0){
                         console.log('Spawning new miner!');
                         Game.spawns[spawn].createMinerCreep(energyA, 'miner');
                         }

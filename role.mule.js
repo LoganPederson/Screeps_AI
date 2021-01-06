@@ -142,7 +142,7 @@ var roleMule = {
                         if(closestPickup){
                             var closestMule = closestPickup.pos.findClosestByPath(muleDuplicateTargets);
                             if (closestMule && creep.name == closestMule.name){
-                                if(creep.withdraw(memory_closestPickup, RESOURCE_ENERGY,) == ERR_NOT_IN_RANGE){
+                                if(creep.transfer(memory_closestPickup, RESOURCE_ENERGY,0) == ERR_NOT_IN_RANGE){
                                     creep.moveTo(memory_closestPickup);
                                 }
                             }
