@@ -15,7 +15,7 @@ var roleBuilder = {
         var closestSource = creep.pos.findClosestByPath(serializedSources);
         
         //VARIABLES
-        var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER);
+        var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER && s.store.getUsedCapacity([RESOURCE_ENERGY]) != 0);
         var closest_container = creep.pos.findClosestByPath(containers);
         
         //Make sure we didn't get lost
