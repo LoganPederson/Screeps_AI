@@ -19,6 +19,8 @@ var roleExpansionBuilder = {
         var closest_container = creep.pos.findClosestByPath(containers);
         var blueFlags = _.filter(Game.flags, (f) => f.color === COLOR_BLUE);
         var blueFlag = blueFlags[0];
+        var yellowFlags = _.filter(Game.flags, (f) => f.color === COLOR_YELLOW);
+        var yellowFlag = yellowFlags[0];
         
         //Make sure we didn't get lost
         if(creep.memory.correctRoom){
@@ -75,12 +77,15 @@ var roleExpansionBuilder = {
     	        }
     	    }
         }
-        // IF NO correctRoom in memory yet -> Go To Blue Flag
-        else{
-            creep.moveTo(blueFlag);
-            //IF ON BLUE FLAG -> SET correctRoom
-            if(creep.pos.x === blueFlag.pos.x && creep.pos.y === blueFlag.pos.y){
+        // IF NO correctRoom in memory yet -> Go To Yellow Flag
+        else if (yellowFlags.length>0){
+            creep.moveTo(yellowFlag);
+            //IF ON YELLOW FLAG -> SET correctRoom
+            if(creep.pos.x === yellowFlag.pos.x && creep.pos.y === yellowFlag.pos.y){
             creep.memory.correctRoom = true;
+        }
+        else{
+            creep.suicide();
         }
         }
 	}

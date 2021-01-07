@@ -66,7 +66,7 @@ var roleBuilder = {
                         creep.moveTo(sources[0]);
                     }
                 }
-                
+
     	        if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == creep.store.getCapacity(RESOURCE_ENERGY)){
     	            creep.moveTo(29,29);
     	        }

@@ -52,6 +52,7 @@ module.exports.loop = function () {
             var energyA = Game.spawns[spawn].room.energyAvailable;
             var energyC = Game.spawns[spawn].room.energyCapacityAvailable;
             var blueFlags = _.filter(Game.flags, (f) => f.color === COLOR_BLUE);
+            var yellowFlags = _.filter(Game.flags, (f) => f.color === COLOR_YELLOW);
 
             // Assign stage based on controllerLevel
             let controllerLevel = room.controller.level;
@@ -183,7 +184,7 @@ module.exports.loop = function () {
                         console.log('Spawning new Builder!');
                         Game.spawns[spawn].createCustomCreep(energyA, 'builder');
                     }
-                    else if(expanders.length < expanders_wanted && blueFlags.length > 0){
+                    else if(expanders.length < expanders_wanted && yellowFlags.length > 0){
                         console.log('Spawning new Expander!');
                         Game.spawns[spawn].createCustomCreep(energyA, 'expander');
                     }
