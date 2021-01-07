@@ -36,9 +36,6 @@ var roleMiner = {
         
         //IF mulesInRoom
         if(mulesInRoom.length > 0){
-            console.log(mulesInRoom);
-            console.log(creep.memory.creepRoom)
-            console.log(creep.room.name)
             //IF REQUESTIN && creep.memory.creepRoom === creep.room.nameG PICKUP BUT INVENTORY  && creep.memory.creepRoom === creep.room.nameEMPTY -> START MINING
     	    if(creep.memory.requestingPickup && creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
                 creep.memory.requestingPickup = false;
@@ -81,7 +78,6 @@ var roleMiner = {
         
         // NO mulesInRoom IN ROOM 
         else{
-            console.log(creep.room.name)
             if(creep.memory.requestingPickup && creep.memory.creepRoom === creep.room.name && creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
                 creep.memory.requestingPickup = false;
                 creep.say('Mining')
