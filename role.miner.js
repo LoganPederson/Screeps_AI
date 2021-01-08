@@ -12,15 +12,14 @@ var roleMiner = {
             var i = i+1;
         }
         var closestSource = creep.pos.findClosestByPath(serializedSources);
-        var sourceMiners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner' && (Game.getObjectById(creep.memory.sourceTarget)) == closestSource);
-        
+        var sourceMiners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'miner' && (Game.getObjectById(creep.memory.sourceTarget)) == closestSource);
+        var miners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'miner' && creep.memory.creepRoom == creep.room.name);
         
         if(!creep.memory.sourceTarget){
-            if(sourceMiners.length > availableSources.length && availableSources.length != 1){
-                nextSource = serializedSources;
-                nextSource.pop();
+            if(availableSources.length > 1 && miners.length > 1){
+                var nextSource = serializedSources.filter(source=> source != closestSource);
                 nextClosestSource = creep.pos.findClosestByPath(nextSource);
-                creep.memory.sourceTarget = nextClosestSource.id;    
+                creep.memory.sourceTarget = nextClosestSource.id;   
             }
             else{
                 creep.memory.sourceTarget = closestSource.id
