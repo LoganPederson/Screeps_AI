@@ -16,7 +16,7 @@ var roleMiner = {
         var miners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'miner' && creep.memory.creepRoom == creep.room.name);
         
         if(!creep.memory.sourceTarget){
-            if(availableSources.length > 1 && miners.length > 1){
+            if(availableSources.length > 1 && miners.length > 0){
                 var nextSource = serializedSources.filter(source=> source != closestSource);
                 nextClosestSource = creep.pos.findClosestByPath(nextSource);
                 creep.memory.sourceTarget = nextClosestSource.id;   
@@ -72,6 +72,7 @@ var roleMiner = {
             if(!creep.memory.requestingPickup && creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0) {
                 creep.memory.requestingPickup = true;
                 creep.say('Requesting Pickup')
+                delete creep.memory.sourceTarget;
             }
         }
         
