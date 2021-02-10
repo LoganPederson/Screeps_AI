@@ -4,104 +4,116 @@ var roleMiner = {
     run: function(creep) {
         
         //SOURCE SERIALIZATION LOGIC
-        var availableSources = creep.room.memory.sources;
-        var serializedSources = []
-        var i = 0;
-        for(let everySource in availableSources){
-            serializedSources.push(Game.getObjectById(availableSources[i]))
-            var i = i+1;
-        }
-        var closestSource = creep.pos.findClosestByPath(serializedSources);
-        var sourceMiners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'miner' && (Game.getObjectById(creep.memory.sourceTarget)) == closestSource);
-        var miners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'miner' && creep.memory.creepRoom == creep.room.name);
-        
-        if(!creep.memory.sourceTarget){
-            if(availableSources.length > 1 && miners.length > 0){
-                var nextSource = serializedSources.filter(source=> source != closestSource);
-                nextClosestSource = creep.pos.findClosestByPath(nextSource);
-                creep.memory.sourceTarget = nextClosestSource.id;   
+        if(creep.spawning == false){
+            const roomSources = creep.room.memory.sources;
+
+
+            let serializedSources = [];
+            var i = 0;
+            for(let everySource in roomSources){
+                serializedSources.push(Game.getObjectById(roomSources[i]))
+                var i = i+1;
             }
+            let closestSource = creep.pos.findClosestByPath(serializedSources);
+            let assignedMiners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role === 'miner' && creep.memory.creepRoom === creep.room.name && creep.memory.sourceTarget);
+            let assignedSources = assignedMiners.map(c => c.memory.sourceTarget);
+            let freeSources = roomSources.filter(id => !_.contains(assignedSources, id));
+            
+            serializedFreeSources = [];
+            var b = 0;
+            for(let everySource in freeSources){
+                serializedFreeSources.push(Game.getObjectById(freeSources[b]))
+                var b = b+1;
+            }
+            console.log(freeSources)
+            console.log(serializedFreeSources)
+            let closestAvailableSource = creep.pos.findClosestByPath(serializedFreeSources);
+            var miners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role === 'miner');
+            if(!creep.memory.sourceTarget){
+                if(roomSources.length > 1 && miners.length > 0 && serializedFreeSources.length > 0){
+                    creep.memory.sourceTarget = closestAvailableSource.id;  
+                }
+                else{
+                    creep.memory.sourceTarget = closestSource.id;
+                }
+            }
+            
+
+            //
+            var creepsInRoomArray = creep.room.find(FIND_MY_CREEPS)
+            var mulesInRoom = _.filter(creepsInRoomArray, (creep) => creep.memory.role == 'mule');
+            var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
+            var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER);
+            var closest_container = creep.pos.findClosestByPath(containers);
+            
+            //IF mulesInRoom
+            if(mulesInRoom.length > 0){
+                //IF REQUESTIN && creep.memory.creepRoom === creep.room.nameG PICKUP BUT INVENTORY  && creep.memory.creepRoom === creep.room.nameEMPTY -> START MINING
+                if(creep.memory.requestingPickup && creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
+                    creep.memory.requestingPickup = false;
+                    creep.say('Mining')
+                }
+                //IF NOT MINING BUT INVENTORY FULL -> REQUEST PICKUP
+                if(!creep.memory.requestingPickup && creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0) {
+                    creep.memory.requestingPickup = true;
+                    creep.say('Requesting Pickup')
+                }
+                
+                //IF NO CONTAINERS -> REQUEST MULE PICKUP
+                if(creep.memory.requestingPickup && containers.length === 0){
+                    var pickupTarget = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
+                        filter: { memory: { role: 'mule' } }
+                    });
+                    //var containerTarget = _.filter(creep.pos.findClosestByRange(FIND_STRUCTURES), (s) => s.structureType == STRUCTURE_CONTAINER);
+                    creep.transfer(pickupTarget, RESOURCE_ENERGY);
+                }
+                //IF CONTAINER(S) PRESENT -> DROP INTO CONTAINER
+                else if(creep.memory.requestingPickup && containers.length > 0){
+                    if(creep.transfer(closest_container,RESOURCE_ENERGY,50) === ERR_NOT_IN_RANGE){
+                        creep.moveTo(closest_container);
+                    }
+                }
+                // Choose Source and Harvest
+                if(!creep.memory.requestingPickup) {
+                    var targetSource = Game.getObjectById(creep.memory.sourceTarget);
+                    if(creep.harvest(targetSource) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(targetSource);
+                    }
+                }
+                if(!creep.memory.requestingPickup && creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0) {
+                    creep.memory.requestingPickup = true;
+                    creep.say('Requesting Pickup')
+                    delete creep.memory.sourceTarget;
+                }
+            }
+            
+            // NO mulesInRoom IN ROOM 
             else{
-                creep.memory.sourceTarget = closestSource.id
-            }
-        }
-        
-        //
-        var creepsInRoomArray = creep.room.find(FIND_MY_CREEPS)
-        var mulesInRoom = _.filter(creepsInRoomArray, (creep) => creep.memory.role == 'mule');
-        var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
-        var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER);
-        var closest_container = creep.pos.findClosestByPath(containers);
-        
-        //IF mulesInRoom
-        if(mulesInRoom.length > 0){
-            //IF REQUESTIN && creep.memory.creepRoom === creep.room.nameG PICKUP BUT INVENTORY  && creep.memory.creepRoom === creep.room.nameEMPTY -> START MINING
-    	    if(creep.memory.requestingPickup && creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
-                creep.memory.requestingPickup = false;
-                creep.say('Mining')
-            }
-            //IF NOT MINING BUT INVENTORY FULL -> REQUEST PICKUP
-            if(!creep.memory.requestingPickup && creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0) {
-                creep.memory.requestingPickup = true;
-                creep.say('Requesting Pickup')
-            }
-            
-            //IF NO CONTAINERS -> REQUEST MULE PICKUP
-            if(creep.memory.requestingPickup && containers.length === 0){
-                var pickupTarget = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
-                    filter: { memory: { role: 'mule' } }
-                });
-                //var containerTarget = _.filter(creep.pos.findClosestByRange(FIND_STRUCTURES), (s) => s.structureType == STRUCTURE_CONTAINER);
-                creep.transfer(pickupTarget, RESOURCE_ENERGY);
-            }
-            //IF CONTAINER(S) PRESENT -> DROP INTO CONTAINER
-            else if(creep.memory.requestingPickup && containers.length > 0){
-                if(creep.transfer(closest_container,RESOURCE_ENERGY,50) === ERR_NOT_IN_RANGE){
-                    creep.moveTo(closest_container);
+                if(creep.memory.requestingPickup && creep.memory.creepRoom === creep.room.name && creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
+                    creep.memory.requestingPickup = false;
+                    creep.say('Mining')
                 }
-            }
-            // Choose Source and Harvest
-            if(!creep.memory.requestingPickup) {
-                var listSources = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
-                var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
-                var targetSource = Game.getObjectById(creep.memory.sourceTarget);
-                if(creep.harvest(targetSource) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(targetSource);
+                if(!creep.memory.requestingPickup && creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0) {
+                    creep.memory.requestingPickup = true;
+                    creep.say('Requesting Pickup')
                 }
-            }
-            if(!creep.memory.requestingPickup && creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0) {
-                creep.memory.requestingPickup = true;
-                creep.say('Requesting Pickup')
-                delete creep.memory.sourceTarget;
-            }
-        }
-        
-        // NO mulesInRoom IN ROOM 
-        else{
-            if(creep.memory.requestingPickup && creep.memory.creepRoom === creep.room.name && creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
-                creep.memory.requestingPickup = false;
-                creep.say('Mining')
-            }
-            if(!creep.memory.requestingPickup && creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0) {
-                creep.memory.requestingPickup = true;
-                creep.say('Requesting Pickup')
-            }
-            
-                // Targets that require filling
-            if(creep.memory.requestingPickup){
-                if(creep.transfer(Game.spawns['Spawn1'], RESOURCE_ENERGY)==ERR_NOT_IN_RANGE){
-                    creep.moveTo(Game.spawns['Spawn1']);
+                
+                    // Targets that require filling
+                if(creep.memory.requestingPickup){
+                    if(creep.transfer(Game.spawns['Spawn1'], RESOURCE_ENERGY)==ERR_NOT_IN_RANGE){
+                        creep.moveTo(Game.spawns['Spawn1']);
+                    }
                 }
-            }
-            else {
-                if(creep.harvest(closestSource == ERR_NOT_IN_RANGE)){
-                    creep.moveTo(closestSource);
-                    creep.harvest(closestSource)
+                else {
+                    if(creep.harvest(closestAvailableSource == ERR_NOT_IN_RANGE)){
+                        creep.moveTo(closestAvailableSource);
+                        creep.harvest(closestAvailableSource)
+                    }
                 }
-            }
-            if(!creep.memory.requestingPickup && creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0) {
-                creep.memory.requestingPickup = true;
-                creep.say('Requesting Pickup')
+                if(!creep.memory.requestingPickup && creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0) {
+                    creep.memory.requestingPickup = true;
+                    creep.say('Requesting Pickup')
+                }
             }
         }
     }
