@@ -32,16 +32,16 @@ var roleMule = {
             if(creep.memory.collecting) {
                 // requestingCreeps = array of creeps with requestingPickup = true
                 
-                var closestPickup = creep.pos.findClosestByPath(containers);
-                var muleDuplicateTargets = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'mule' && (Game.getObjectById(creep.memory.closestPickup)) == closestPickup);
-                var memory_closestPickup = Game.getObjectById(creep.memory.closestPickup);
+                var closest_container = creep.pos.findClosestByPath(containers);
+                var muleDuplicateTargets = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'mule' && (Game.getObjectById(creep.memory.closest_container)) == closest_container);
+                var memory_closest_container = Game.getObjectById(creep.memory.closest_container);
 
                 //IF NO CLOSEST PICKUP IN MEMORY BUT STRUCTURES NEED ENERGY -> SET MEMORY
-                if((!creep.memory.closestPickup || creep.memory.closestPickup === undefined) && notFullStructures.length != 0){
-                    creep.memory.closestPickup = closestPickup.id;   
+                if((!creep.memory.closest_container || creep.memory.closest_container === undefined) && notFullStructures.length != 0){
+                    creep.memory.closest_container = closest_container.id;   
                 }
-                //IF CREEP HAS CLOSESTPICKUP IN MEMORY
-                else if(creep.memory.closestPickup){
+                //IF CREEP HAS closest_container IN MEMORY
+                else if(creep.memory.closest_container){
                     //IF LESS STRUCTURES REQUESTING THAN MULES
                     if(notFullStructures.length < mules.length){
                         //IF MORE THAN JUST THIS MULE WITH SAME CLOSEST PICKUP -> SHIFT ARRAY??
@@ -49,27 +49,27 @@ var roleMule = {
                             nextTarget = notFullStructures;
                             nextTarget.shift();
                             nextClosestTarget = nextTarget[0];
-                            creep.memory.closestPickup = nextClosestTarget.id;    
+                            creep.memory.closest_container = nextClosestTarget.id;    
                         }
                     }
                     //IF MORE STRUCTURES REQUESTING THAN MULES
                     else{
                         //IF CONTAINER NEARBY IS SET
-                        if(closestPickup){
-                            // var closestMule = closestPickup.pos.findClosestByPath(muleDuplicateTargets);
-                            // if(creep.memory.closestPickup){
-                            //     if(creep.withdraw(memory_closestPickup, RESOURCE_ENERGY,) == ERR_NOT_IN_RANGE){
-                            //         creep.moveTo(memory_closestPickup);
+                        if(closest_container){
+                            // var closestMule = closest_container.pos.findClosestByPath(muleDuplicateTargets);
+                            // if(creep.memory.closest_container){
+                            //     if(creep.withdraw(memory_closest_container, RESOURCE_ENERGY,) == ERR_NOT_IN_RANGE){
+                            //         creep.moveTo(memory_closest_container);
                             //     }
                             // }
                             // else{
-                            //     creep.memory.closestPickup = '';
+                            //     creep.memory.closest_container = '';
                             // }
-                            if(creep.memory.closestPickup != closestPickup.id){
-                                creep.memory.closestPickup = closestPickup.id;
+                            if(creep.memory.closest_container != closest_container.id){
+                                creep.memory.closest_container = closest_container.id;
                             }
-                            if(creep.withdraw(memory_closestPickup, RESOURCE_ENERGY,) == ERR_NOT_IN_RANGE){
-                                creep.moveTo(memory_closestPickup);
+                            if(creep.withdraw(memory_closest_container, RESOURCE_ENERGY,) == ERR_NOT_IN_RANGE){
+                                creep.moveTo(memory_closest_container);
                             }
                         }
                     }
@@ -94,7 +94,7 @@ var roleMule = {
                 }
             }
         }
-        //IF NO CONTAINERS IN ROOM -> CHANGE closestPickup TO BE CREEPS NOT CONTAINERS 
+        //IF NO CONTAINERS IN ROOM -> CHANGE closest_container TO BE CREEPS NOT CONTAINERS 
         else{
             
             //IF NOT COLLECTING AND INVENTORY EMPTY -> COLLECT
@@ -112,18 +112,18 @@ var roleMule = {
             if(creep.memory.collecting) {
                 // requestingCreeps = array of creeps with requestingPickup = true
                 
-                var closestPickup = creep.pos.findClosestByPath(requestingCreeps);
-                var muleDuplicateTargets = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule' && (Game.getObjectById(creep.memory.closestPickup)) == closestPickup);
-                var memory_closestPickup = Game.getObjectById(creep.memory.closestPickup);
+                var closest_container = creep.pos.findClosestByPath(requestingCreeps);
+                var muleDuplicateTargets = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule' && (Game.getObjectById(creep.memory.closest_container)) == closest_container);
+                var memory_closest_container = Game.getObjectById(creep.memory.closest_container);
                 //IF NO CLOSEST PICKUP IN MEMORY BUT CREEPS REQUESTING -> SET MEMORY
-                if(!creep.memory.closestPickup && requestingCreeps.length != 0){
+                if(!creep.memory.closest_container && requestingCreeps.length != 0){
                     //IF OTHER MULE HAS SAME TARGET SET, CHOOSE FURTHER TARGET TO MEMORY
                     if(muleDuplicateTargets.length > 1){
                         nextTarget = requestingCreeps;
-                        nextTarget.splice(closestPickup, nextTarget[1]);
+                        nextTarget.splice(closest_container, nextTarget[1]);
                         if(creep.pos.findClosestByPath(nextTarget) != null){
                             nextClosestTarget = creep.pos.findClosestByPath(nextTarget);
-                            creep.memory.closestPickup = nextClosestTarget.id;
+                            creep.memory.closest_container = nextClosestTarget.id;
                         }
                         else{
                             creep.say("Can't Reach or No Creeps!");
@@ -131,31 +131,31 @@ var roleMule = {
                     }
                     //IF NO DUPLICATE MULE TARGETS, SET CLOSEST PICKUP TO MEMORY
                     else{
-                        if(closestPickup){
-                            creep.memory.closestPickup = closestPickup.id;
+                        if(closest_container){
+                            creep.memory.closest_container = closest_container.id;
                         }
                     }
                 }
-                //IF CREEP HAS CLOSESTPICKUP IN MEMORY
+                //IF CREEP HAS closest_container IN MEMORY
                 else{
                     if(requestingCreeps.length > mules.length){
                         if(muleDuplicateTargets.length > 1){
                             nextTarget = requestingCreeps;
                             nextTarget.shift();
                             nextClosestTarget = nextTarget[0];
-                            creep.memory.closestPickup = nextClosestTarget.id;    
+                            creep.memory.closest_container = nextClosestTarget.id;    
                         }
                     }
                     else{
-                        if(closestPickup){
-                            var closestMule = closestPickup.pos.findClosestByPath(muleDuplicateTargets);
+                        if(closest_container){
+                            var closestMule = closest_container.pos.findClosestByPath(muleDuplicateTargets);
                             if (closestMule && creep.name == closestMule.name){
-                                if(creep.transfer(memory_closestPickup, RESOURCE_ENERGY,0) == ERR_NOT_IN_RANGE){
-                                    creep.moveTo(memory_closestPickup);
+                                if(creep.transfer(memory_closest_container, RESOURCE_ENERGY,0) == ERR_NOT_IN_RANGE){
+                                    creep.moveTo(memory_closest_container);
                                 }
                             }
                             else{
-                                creep.memory.closestPickup = '';
+                                creep.memory.closest_container = '';
                             }
                         }
                         else{
