@@ -17,7 +17,6 @@ var roleMiner = {
             let assignedMiners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role === 'miner' && creep.memory.creepRoom === creep.room.name && creep.memory.sourceTarget);
             let assignedSources = assignedMiners.map(c => c.memory.sourceTarget);
             let freeSources = roomSources.filter(id => !_.contains(assignedSources, id));
-            console.log(freeSources)
             serializedFreeSources = [];
             var b = 0;
             for(let everySource in freeSources){
@@ -39,7 +38,7 @@ var roleMiner = {
             var mulesInRoom = _.filter(creepsInRoomArray, (creep) => creep.memory.role == 'mule');
             var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
             var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER);
-            var closest_container = creep.pos.findClosestByPath(containers);
+            var closestContainer = creep.pos.findClosestByPath(containers);
             
             //IF mulesInRoom
             if(mulesInRoom.length > 0){
@@ -64,8 +63,8 @@ var roleMiner = {
                 }
                 //IF CONTAINER(S) PRESENT -> DROP INTO CONTAINER
                 else if(creep.memory.requestingPickup && containers.length > 0){
-                    if(creep.transfer(closest_container,RESOURCE_ENERGY,50) === ERR_NOT_IN_RANGE){
-                        creep.moveTo(closest_container);
+                    if(creep.transfer(closestContainer,RESOURCE_ENERGY,50) === ERR_NOT_IN_RANGE){
+                        creep.moveTo(closestContainer);
                     }
                 }
                 // Choose Source and Harvest
