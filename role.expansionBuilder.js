@@ -84,8 +84,9 @@ var roleExpansionBuilder = {
             if(creep.pos.x === yellowFlag.pos.x && creep.pos.y === yellowFlag.pos.y){
             creep.memory.correctRoom = true;
         }
-        else{
-            creep.suicide();
+        else if(yellowFlags.length === 0){
+            //creep.suicide();
+            console.log(creep.name+' Tried to suicide!');
         }
         }
 	}

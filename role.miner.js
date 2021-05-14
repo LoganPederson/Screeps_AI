@@ -2,11 +2,10 @@ var roleMiner = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-        
+
         //SOURCE SERIALIZATION LOGIC
         if(creep.spawning == false){
             const roomSources = creep.room.memory.sources;
-
 
             let serializedSources = [];
             var i = 0;
@@ -18,28 +17,24 @@ var roleMiner = {
             let assignedMiners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role === 'miner' && creep.memory.creepRoom === creep.room.name && creep.memory.sourceTarget);
             let assignedSources = assignedMiners.map(c => c.memory.sourceTarget);
             let freeSources = roomSources.filter(id => !_.contains(assignedSources, id));
-            
+            console.log(freeSources)
             serializedFreeSources = [];
             var b = 0;
             for(let everySource in freeSources){
                 serializedFreeSources.push(Game.getObjectById(freeSources[b]))
                 var b = b+1;
             }
-            console.log(freeSources)
-            console.log(serializedFreeSources)
+
             let closestAvailableSource = creep.pos.findClosestByPath(serializedFreeSources);
             var miners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role === 'miner');
             if(!creep.memory.sourceTarget){
-                if(roomSources.length > 1 && miners.length > 0 && serializedFreeSources.length > 0){
+                if(roomSources.length > 1 && miners.length > 0 && serializedFreeSources.length > 0 && closestAvailableSource){
                     creep.memory.sourceTarget = closestAvailableSource.id;  
                 }
                 else{
                     creep.memory.sourceTarget = closestSource.id;
                 }
             }
-            
-
-            //
             var creepsInRoomArray = creep.room.find(FIND_MY_CREEPS)
             var mulesInRoom = _.filter(creepsInRoomArray, (creep) => creep.memory.role == 'mule');
             var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
@@ -92,6 +87,7 @@ var roleMiner = {
                 if(creep.memory.requestingPickup && creep.memory.creepRoom === creep.room.name && creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
                     creep.memory.requestingPickup = false;
                     creep.say('Mining')
+                    
                 }
                 if(!creep.memory.requestingPickup && creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0) {
                     creep.memory.requestingPickup = true;
@@ -104,16 +100,16 @@ var roleMiner = {
                         creep.moveTo(Game.spawns['Spawn1']);
                     }
                 }
-                else {
+                else if(creep.memory.requestingPickup === false) {
                     if(creep.harvest(closestAvailableSource == ERR_NOT_IN_RANGE)){
-                        creep.moveTo(closestAvailableSource);
-                        creep.harvest(closestAvailableSource)
+                        creep.moveTo(Game.getObjectById(creep.memory.sourceTarget));
+                        creep.harvest(Game.getObjectById(creep.memory.sourceTarget));
                     }
                 }
-                if(!creep.memory.requestingPickup && creep.store.getFreeCapacity([RESOURCE_ENERGY]) == 0) {
-                    creep.memory.requestingPickup = true;
-                    creep.say('Requesting Pickup')
-                }
+                // if(!creep.memory.requestingPickup && creep.store.getUsedCapacity([RESOURCE_ENERGY]) === 0) {
+                //     creep.memory.requestingPickup = false;
+                //     creep.say('Mining');
+                // }
             }
         }
     }

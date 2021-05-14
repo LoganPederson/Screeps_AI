@@ -10,6 +10,8 @@ var roleMule = {
                 return(creep.memory.requestingPickup == true);
             }
         });
+        
+
         var notFullStructures = _.filter(creep.room.find(FIND_MY_STRUCTURES), (s) => s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_TOWER);
         var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER && s.store.getUsedCapacity([RESOURCE_ENERGY]) != 0);
         // IF CONTAINERS IN ROOM -> 
@@ -119,12 +121,19 @@ var roleMule = {
                     if(muleDuplicateTargets.length > 1){
                         nextTarget = requestingCreeps;
                         nextTarget.splice(closestPickup, nextTarget[1]);
-                        nextClosestTarget = creep.pos.findClosestByPath(nextTarget);
-                        creep.memory.closestPickup = nextClosestTarget.id;
+                        if(creep.pos.findClosestByPath(nextTarget) != null){
+                            nextClosestTarget = creep.pos.findClosestByPath(nextTarget);
+                            creep.memory.closestPickup = nextClosestTarget.id;
+                        }
+                        else{
+                            creep.say("Can't Reach or No Creeps!");
+                        }
                     }
                     //IF NO DUPLICATE MULE TARGETS, SET CLOSEST PICKUP TO MEMORY
                     else{
-                        creep.memory.closestPickup = closestPickup.id;
+                        if(closestPickup){
+                            creep.memory.closestPickup = closestPickup.id;
+                        }
                     }
                 }
                 //IF CREEP HAS CLOSESTPICKUP IN MEMORY

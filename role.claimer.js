@@ -13,14 +13,18 @@ var roleClaimer = {
         }
 
         //IF CREEP NOT IN CLAIM ROOM -> MOVE TO BLUE FLAG
-        if(creep.pos != blueFlag.pos && !creep.memory.correctRoom){
-            let flagRoom = blueFlag.pos.roomName
-            creep.moveTo(blueFlag);
-            console.log('claimer moving to claimRoom')
+        if(blueFlag){
+            if(creep.pos != blueFlag.pos && !creep.memory.correctRoom){
+                let flagRoom = blueFlag.pos.roomName
+                creep.moveTo(blueFlag);
+                console.log('claimer moving to claimRoom')
+            }
         }
         //IF CREEP IN CLAIM ROOM -> CLAIM CONTROLLER
-        if(creep.pos.x === blueFlag.pos.x && creep.pos.y === blueFlag.pos.y){
-            creep.memory.correctRoom = true;
+        if(creep.memory.correctRoom === false || !creep.memory.correctRoom){
+            if(creep.pos.x === blueFlag.pos.x && creep.pos.y === blueFlag.pos.y){
+                creep.memory.correctRoom = true;
+            }
         }
         
         //IF IN CORRECT ROOM

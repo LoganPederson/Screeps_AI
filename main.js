@@ -82,11 +82,11 @@ module.exports.loop = function () {
                 //SPAWN LOGIC
                 var builders_wanted = 1;
                 var expanders_wanted = 1;
-                var upgraders_wanted = 2;
-                var defenders_wanted = 1;
-                var claimers_wanted = 1;
+                var upgraders_wanted = 1;
+                var defenders_wanted = 0;
+                var claimers_wanted = 0;
                 var miners_wanted = 2;
-                var mules_wanted = 3;
+                var mules_wanted = 2;
                 var repairs_wanted = 1;
                 var sweepers_wanted = 0;
                 
@@ -119,7 +119,11 @@ module.exports.loop = function () {
                     console.log(room.name+ ' '+'Spawning new Builder!');
                     Game.spawns[spawn].createCustomCreep(energyA, 'builder');
                 }
-                else if(expanders.length < expanders_wanted && room.find(FIND_MY_CONSTRUCTION_SITES).length > 0 && blueFlags.length >0){
+                else if(claimers.length < claimers_wanted && blueFlags.length > 0){
+                console.log(room.name+ ' '+'Spawning new Claimer!');
+                Game.spawns[spawn].spawnCreep([MOVE,WORK,CARRY,CLAIM,MOVE,MOVE], 'claimer '+Game.time,{memory:{role: 'claimer' }})
+                }
+                else if(expanders.length < expanders_wanted && room.find(FIND_MY_CONSTRUCTION_SITES).length > 0 && yellowFlags.length >0){
                     console.log(room.name+ ' '+'Spawning new Expander!');
                     Game.spawns[spawn].createCustomCreep(energyA, 'expander');
                 }
@@ -134,10 +138,6 @@ module.exports.loop = function () {
                 else if(defenders.length < defenders_wanted){
                     console.log(room.name+ ' '+'Spawning new Defender!!');
                     Game.spawns[spawn].spawnCreep([MOVE,ATTACK,MOVE,ATTACK,TOUGH,TOUGH], 'defender '+Game.time,{memory:{role: 'defender' }})
-                }
-                else if(claimers.length < claimers_wanted && blueFlags.length > 0){
-                console.log(room.name+ ' '+'Spawning new Claimer!');
-                Game.spawns[spawn].spawnCreep([MOVE,WORK,CARRY,CLAIM,MOVE,MOVE], 'claimer '+Game.time,{memory:{role: 'claimer' }})
                 }
             }
         }
