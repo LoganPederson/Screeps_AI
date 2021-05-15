@@ -82,7 +82,7 @@ module.exports.loop = function () {
                 //SPAWN LOGIC
                 var builders_wanted = 1;
                 var expanders_wanted = 1;
-                var upgraders_wanted = 1;
+                var upgraders_wanted = 2;
                 var defenders_wanted = 0;
                 var claimers_wanted = 0;
                 var miners_wanted = 2;
