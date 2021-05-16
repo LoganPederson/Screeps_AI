@@ -29,12 +29,55 @@ module.exports.loop = function () {
         var creep = Game.creeps[creepName];
         creep.memory.creepRoom = creep.room.name;
     }
+    //RUN ROLE FUNCTIONS FOR CREEPS WITH ROLE IN MEMORY
+    for(var creepName in Game.creeps) {
+        //creep.suicide();
+        var creep = Game.creeps[creepName];
+        if(!creep.memory.creepRoom){
+            creep.memory.creepRoom = creep.room.name
+        }
+        if(creep.memory.role == 'miner'){
+            roleMiner.run(creep);
+        }
+        if(creep.memory.role == 'mule'){
+            roleMule.run(creep);
+        }
+        if(creep.memory.role == 'harvester') {
+            roleHarvester.run(creep);
+        }
+        if(creep.memory.role == 'upgrader') {
+            roleUpgrader.run(creep);
+        }
+        if(creep.memory.role == 'builder') {
+            roleBuilder.run(creep);
+        }
+        if(creep.memory.role == 'defender') {
+            roleDefender.run(creep);
+        }
+        if(creep.memory.role == 'claimer') {
+            roleClaimer.run(creep);
+        }
+        if(creep.memory.role == 'attacker'){
+            roleAttacker.run(creep);
+        }
+        if(creep.memory.role == 'sweeper'){
+            roleSweeper.run(creep);
+        }
+        if(creep.memory.role == 'repair'){
+            roleRepair.run(creep);
+        }
+        if(creep.memory.role == 'expander'){
+            roleExpansionBuilder.run(creep);
+        }
+    }
     //Run for each Room
     for(let roomName in Game.rooms){
         let room = Game.rooms[roomName];
         room.memory.sources = []
         room.memory.availableWorkers = []
-        var spawners = _.filter(room.find(FIND_MY_STRUCTURES), (s) => s.structureType == STRUCTURE_SPAWN);
+        var spawners = _.filter(room.find(FIND_MY_STRUCTURES), (s) => s.structureType === STRUCTURE_SPAWN);
+        var containers = _.filter(room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER);
+        var constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
         if(spawners.length > 0){
             var spawn = spawners[0].name;
             var harvesters = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'harvester' && creep.memory.creepRoom == room.name);
@@ -53,7 +96,7 @@ module.exports.loop = function () {
             var energyC = Game.spawns[spawn].room.energyCapacityAvailable;
             var blueFlags = _.filter(Game.flags, (f) => f.color === COLOR_BLUE);
             var yellowFlags = _.filter(Game.flags, (f) => f.color === COLOR_YELLOW);
-
+            var containersRequestingEnergy = [];
             // Assign stage based on controllerLevel
             let controllerLevel = room.controller.level;
             if(controllerLevel < 5){
@@ -115,7 +158,7 @@ module.exports.loop = function () {
                     console.log(room.name+ ' '+'Spawning new Mule!');
                     Game.spawns[spawn].createMuleCreep(energyA, 'mule');
                 }
-                else if(builders.length < builders_wanted){
+                else if(builders.length < builders_wanted && constructionSites.length > 0){
                     console.log(room.name+ ' '+'Spawning new Builder!');
                     Game.spawns[spawn].createCustomCreep(energyA, 'builder');
                 }
@@ -127,7 +170,7 @@ module.exports.loop = function () {
                     console.log(room.name+ ' '+'Spawning new Expander!');
                     Game.spawns[spawn].createCustomCreep(energyA, 'expander');
                 }
-                else if(sweepers.length < 1 && Game.spawns[spawn].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0).length != 0){
+                else if(sweepers.length < 1 && Game.spawns[spawn].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity([RESOURCE_ENERGY]) > 0).length != 0){
                     console.log(room.name+ ' '+'Spawning new Sweeper!');
                     Game.spawns[spawn].createMuleCreep(energyA, 'sweeper');
                 }
@@ -180,7 +223,7 @@ module.exports.loop = function () {
                         console.log(room.name+ ' '+'Spawning new Upgrader!');
                         Game.spawns[spawn].createCustomCreep(energyA, 'upgrader');
                     }
-                    else if(builders.length < builders_wanted){
+                    else if(builders.length < builders_wanted && constructionSites.length > 0){
                         console.log(room.name+ ' '+'Spawning new Builder!');
                         Game.spawns[spawn].createCustomCreep(energyA, 'builder');
                     }
@@ -188,7 +231,7 @@ module.exports.loop = function () {
                         console.log(room.name+ ' '+'Spawning new Expander!');
                         Game.spawns[spawn].createCustomCreep(energyA, 'expander');
                     }
-                    else if(sweepers.length < 1 && Game.spawns[spawn].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0).length != 0){
+                    else if(sweepers.length < 1 && Game.spawns[spawn].room.find(FIND_RUINS).filter(ruin => ruin.store.getUsedCapacity([RESOURCE_ENERGY]) > 0).length != 0){
                         console.log(room.name+ ' '+'Spawning new Sweeper!');
                         Game.spawns[spawn].createMuleCreep(energyA, 'sweeper');
                     }
@@ -207,48 +250,20 @@ module.exports.loop = function () {
                 }
             }
         }
-    }
-       
-       // Run for each creep
-    for(var name in Game.creeps) {
-        //creep.suicide();
-        var creep = Game.creeps[name];
-        if(!creep.memory.creepRoom){
-            creep.memory.creepRoom = creep.room.name
+        //CONTAINER LOGIC IN ROOM
+        for(let thisContainer in containers){
+            var container = containers[thisContainer];
+            //IF CONTAINER < %40 -> ADD TO ROOM MEMORY
+            if(container.store.getUsedCapacity([RESOURCE_ENERGY]) < (container.store.getCapacity([RESOURCE_ENERGY])*0.4)){
+                containersRequestingEnergy.push(container.id);
+            }
+            //IF CONTAINER > 90% -> REQUESTINGENERGY FALSE
+            if(container.store.getUsedCapacity([RESOURCE_ENERGY]) > (container.store.getCapacity([RESOURCE_ENERGY])*0.9)){
+                containersRequestingEnergy.splice(container);
+            }
         }
-        if(creep.memory.role == 'miner'){
-            roleMiner.run(creep);
-        }
-        if(creep.memory.role == 'mule'){
-            roleMule.run(creep);
-        }
-        if(creep.memory.role == 'harvester') {
-            roleHarvester.run(creep);
-        }
-        if(creep.memory.role == 'upgrader') {
-            roleUpgrader.run(creep);
-        }
-        if(creep.memory.role == 'builder') {
-            roleBuilder.run(creep);
-        }
-        if(creep.memory.role == 'defender') {
-            roleDefender.run(creep);
-        }
-        if(creep.memory.role == 'claimer') {
-            roleClaimer.run(creep);
-        }
-        if(creep.memory.role == 'attacker'){
-            roleAttacker.run(creep);
-        }
-        if(creep.memory.role == 'sweeper'){
-            roleSweeper.run(creep);
-        }
-        if(creep.memory.role == 'repair'){
-            roleRepair.run(creep);
-        }
-        if(creep.memory.role == 'expander'){
-            roleExpansionBuilder.run(creep);
-        }
+        room.memory.containersRequestingEnergy = containersRequestingEnergy;
+        console.log(containersRequestingEnergy)
     }
         
     //Tower logic!
