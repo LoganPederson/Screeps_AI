@@ -23,7 +23,7 @@ var roleBuilder = {
         //Make sure we didn't get lost
         if(creep.memory.creepRoom){
             // If Building & no energy -> Stop Building
-    	    if(creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
+    	    if(creep.memory.building && creep.store[RESOURCE_ENERGY] === 0) {
                 creep.memory.building = false;
                 creep.say('🔄 harvest');
     	    }
@@ -35,33 +35,35 @@ var roleBuilder = {
                 
             }
     	    // If building && not out of energy && no build jobs to do -> Upgrade Ramparts
-    	    if(creep.memory.building && !creep.store[RESOURCE_ENERGY] === 0 && creep.room.find(FIND_CONSTRUCTION_SITES).length === 0) {
+    	    if(creep.memory.building && creep.store.getUsedCapacity([RESOURCE_ENERGY]) != 0 && creep.room.find(FIND_CONSTRUCTION_SITES).length === 0) {
 
                 var rampartsNotFull = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_RAMPART && (s.hits < s.hitsMax));
+                console.log("rampartsNotFull: "+rampartsNotFull)
                 var rampartsTenOrLower = rampartsNotFull.filter(structure => structure.hits < (structure.hitsMax * 0.1));
+                console.log("rampartsTenOrLower: "+rampartsTenOrLower)
                 var rampartsThirtyOrLower = rampartsNotFull.filter(structure => structure.hits < (structure.hitsMax * 0.3));
                 var rampartsFiftyOrLower = rampartsNotFull.filter(structure => structure.hits < (structure.hitsMax * 0.5));
                 var rampartsEightyOrLower = rampartsNotFull.filter(structure => structure.hits < (structure.hitsMax * 0.8));
                 // Want to make it so that all ramparts are within 10% of eachothers hits, so check targetRampart compared to lowestRampart and highestRampart
                 if(rampartsTenOrLower.length > 0){
                     var targetRampart = creep.pos.findClosestByPath(rampartsTenOrLower);
-                    creep.memory.targetRampart = targetRampart;
+                    creep.memory.targetRampart = targetRampart.id;
                 }
                 else if(rampartsThirtyOrLower.length > 0){
                     var targetRampart = creep.pos.findClosestByPath(rampartsThirtyOrLower);
-                    creep.memory.targetRampart = targetRampart;
+                    creep.memory.targetRampart = targetRampart.id;
                 }
                 else if(rampartsFiftyOrLower.length > 0){
                     var targetRampart = creep.pos.findClosestByPath(rampartsFiftyOrLower);
-                    creep.memory.targetRampart = targetRampart;
+                    creep.memory.targetRampart = targetRampart.id;
                 }
                 else if(rampartsEightyOrLower.length > 0){
                     var targetRampart = creep.pos.findClosestByPath(rampartsEightyOrLower);
-                    creep.memory.targetRampart = targetRampart;
+                    creep.memory.targetRampart = targetRampart.id;
                 }
                 else if (rampartsNotFull.length > 0 && rampartsEightyOrLower.length === 0){
                     var targetRampart = creep.pos.findClosestByPath(rampartsNotFull);
-                    creep.memory.targetRampart = targetRampart;
+                    creep.memory.targetRampart = targetRampart.id;
                 }
                 if(creep.repair(Game.getObjectById(creep.memory.targetRampart) === ERR_NOT_IN_RANGE)){
                     creep.moveTo(Game.getObjectById(creep.memory.targetRampart));
