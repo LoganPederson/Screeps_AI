@@ -17,7 +17,7 @@ var roleRepair = {
     	            filter: (structure) => {
     	                return(structure.hits <= (structure.hitsMax *0.9) && (structure.structureType === STRUCTURE_ROAD || structure.structureType === STRUCTURE_TOWER || structure.structureType === STRUCTURE_CONTAINER));
     	            }
-    	        })
+    	        });
     	var closest_repair = creep.pos.findClosestByPath(repair_target);
         var memory_repairTarget = Game.getObjectById(creep.memory.repairTarget);
         var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER && s.store.getUsedCapacity([RESOURCE_ENERGY]) != 0);

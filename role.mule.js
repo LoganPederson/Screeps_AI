@@ -26,6 +26,7 @@ var roleMule = {
             let container = creep.room.memory.containersRequestingEnergy[thisContainer];
             containersRequestingEnergy.push(Game.getObjectById(container));
         }
+        //console.log("This is requesting energy mule29: "+containersRequestingEnergy);
         //console.log("containers requesting energy array "+containersRequestingEnergy); FOR TESTING CONTAINER ARRAY REQUESTING ENERGY
         var containersOverflowingEnergy = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
@@ -33,17 +34,21 @@ var roleMule = {
             }
         });
 
-        var notFullStructures = _.filter(creep.room.find(FIND_MY_STRUCTURES), (s) => s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_TOWER);
-        var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER && s.store.getUsedCapacity([RESOURCE_ENERGY]) != 0);
+        var notFullStructures = _.filter(creep.room.find(FIND_MY_STRUCTURES), (s) => s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity != 0);
+        var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER && s.store.getUsedCapacity([RESOURCE_ENERGY]) > 0);
+        var containersAll = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER && s.store.getUsedCapacity([RESOURCE_ENERGY]) != 0);
         // IF CONTAINERS IN ROOM -> 
-        if(containers.length > 0){
+        if(containersAll.length > 0){
             var closestContainer = creep.pos.findClosestByPath(containers);
-            //IF NOT COLLECTING AND INVENTORY EMPTY -> COLLECT
-            if(!creep.memory.collecting && creep.store.getUsedCapacity([RESOURCE_ENERGY]) == 0){
+            //IF NOT COLLECTING AND INVENTORY EMPTY AND CREEPS NEED ENERGY OR BUILDINGS DO -> COLLECT
+            if(!creep.memory.collecting && creep.store.getUsedCapacity([RESOURCE_ENERGY]) === 0 && (creepsRequestingEnergy.length > 0 || fillingTargets.length > 0)){
                 creep.memory.collecting = true;
             }
             //IF COLLECTING AND INVENTORY FULL -> STOP COLLECTING
-            if(creep.memory.collecting && creep.store.getFreeCapacity([RESOURCE_ENERGY])==0){
+            if(creep.memory.collecting && creep.store.getFreeCapacity([RESOURCE_ENERGY])===0){
+                creep.memory.collecting = false;
+            }
+            else if(creep.memory.collecting && creepsRequestingEnergy.length === 0 && fillingTargets.length === 0){
                 creep.memory.collecting = false;
             }
             
@@ -54,36 +59,50 @@ var roleMule = {
                 // requestingCreeps = array of creeps with requestingPickup = true
                 
                 var closestContainer = creep.pos.findClosestByPath(containers);
-                var muleDuplicatefillingTargets = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'mule' && (Game.getObjectById(creep.memory.closestContainer)) == closestContainer);
+                var muleDuplicatefillingTargets = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role === 'mule' && (Game.getObjectById(creep.memory.fillingTarget)) === creep.pos.findClosestByPath(fillingTargets));
+                if(creep.memory.closestContainer){
                 var memory_closestContainer = Game.getObjectById(creep.memory.closestContainer);
-
+                }
+                else{
+                    creep.memory.closestContainer = closestContainer.id;
+                }
                 //IF NO CLOSEST PICKUP IN MEMORY BUT STRUCTURES NEED ENERGY -> SET MEMORY
-                if((!creep.memory.closestContainer || creep.memory.closestContainer === undefined) && notFullStructures.length != 0){
+                // console.log(creep.memory.closestContainer);
+                // console.log(notFullStructures.length)
+                // console.log(containers)
+                if((!creep.memory.closestContainer || creep.memory.closestContainer === undefined) && fillingTargets.length != 0){
                     creep.memory.closestContainer = closestContainer.id;   
                 }
                 //IF CREEP HAS closestContainer IN MEMORY
                 else if(creep.memory.closestContainer){
                     //IF LESS STRUCTURES REQUESTING THAN MULES
-                    if(notFullStructures.length < mules.length){
+                    if(fillingTargets.length < mules.length){
                         //IF MORE THAN JUST THIS MULE WITH SAME CLOSEST PICKUP -> SHIFT ARRAY??
-                        if(muleDuplicatefillingTargets.length > 1){
-                            nextTarget = notFullStructures;
+                        if(muleDuplicatefillingTargets.length > 1 && fillingTargets.length > 1){
+                            nextTarget = fillingTargets;
                             nextTarget.shift();
                             nextClosestTarget = nextTarget[0];
-                            creep.memory.closestContainer = nextClosestTarget.id;    
+                            creep.memory.closestRequestingEnergy = nextClosestTarget.id;    
                         }
                     }
                     //IF MORE STRUCTURES REQUESTING THAN MULES
-                    else{
+                    else if(fillingTargets.length > mules.length){
+                        //console.log("Structures requesting energy: "+fillingTargets)
                         //IF CONTAINER NEARBY IS SET
                         if(closestContainer){
+                            //console.log("Mule is collecting, CREEP HAS CLOSEST CONTAINER IN MEMORY & CLOSEST CONTAINER EXISTS")
+                            //IF CREEPS MEMORY DIFFERENT THAN CLOSEST CONTAINER, OVERWRITE WITH CLOSEST CONTAINER
                             if(creep.memory.closestContainer != closestContainer.id){
                                 creep.memory.closestContainer = closestContainer.id;
                             }
-                            if(creep.withdraw(memory_closestContainer, RESOURCE_ENERGY,) == ERR_NOT_IN_RANGE){
+                            //IF CREEP CAN'T WITHDRAW -> MOVE AND WITHDRAW
+                            if(creep.withdraw(memory_closestContainer, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE){
                                 creep.moveTo(memory_closestContainer);
                             }
                         }
+                    }
+                    else if(fillingTargets.length === 0){
+                        creep.memory.collecting = false;
                     }
                 }
             }
@@ -104,6 +123,7 @@ var roleMule = {
                     if(creep.pos.findClosestByPath(nextTarget) != null){
                         nextClosestTarget = creep.pos.findClosestByPath(nextTarget);
                         creep.memory.closestRequestingEnergy = nextClosestTarget.id;
+                        //console.log("Mule 119 Not collecting, Multiple mule duplicate filling targets, and more creeps requesting than mules , trying to switch targets")
                     }
                     else{
                         creep.say("Can't Reach or No Creeps!");
@@ -115,11 +135,12 @@ var roleMule = {
                     if(closestRequestingEnergy){
                         //CLOSEST REQUESTING ENERGY BECOMES TARGET
                         creep.memory.closestRequestingEnergy = closestRequestingEnergy.id;
+                        //console.log('Mule 132 '+closestRequestingEnergy)
                     }
                 }
                 //IF BUILDINGS NEED ENERGY AND CREEP HAS SOME -> MOVE TO AND FILL
                 if(fillingTargets.length > 0 && creep.store.getUsedCapacity([RESOURCE_ENERGY]) > 0 && creepsRequestingEnergy.length === 0) {
-                    if(creep.transfer(fillingTargets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    if(creep.transfer(fillingTargets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                         creep.moveTo(fillingTargets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                     }
                 }
@@ -127,12 +148,13 @@ var roleMule = {
                 else if(fillingTargets.length === 0 && creepsRequestingEnergy.length === 0){
                     //IF CONTAINER < 40% ENERGY
                     if(containersRequestingEnergy.length > 0){
+                        //console.log("ContainersRequestingEnergy > 0")
                         let targetGrabContainer = creep.pos.findClosestByPath(containersOverflowingEnergy);
                         let targetFillContainer = creep.pos.findClosestByPath(containersRequestingEnergy);
                         //IF MULE NEEDS ENERGY -> GRAB FROM CONTAINER ABOVE 40% ENERGY
                         if(creep.store.getFreeCapacity([RESOURCE_ENERGY]) > 0){
                             // withdraw amount = 60% (max) - (difference between max and what we have = what we can withdraw without triggering loop of collecting)
-                            let withdrawAmountMax = targetFillContainer.store.getCapacity([RESOURCE_ENERGY]) * 0.6 - (targetFillContainer.store.getCapacity([RESOURCE_ENERGY]) -targetFillContainer.store.getFreeCapacity([RESOURCE_ENERGY]));
+                            var withdrawAmountMax = targetFillContainer.store.getCapacity([RESOURCE_ENERGY]) * 0.6 - (targetFillContainer.store.getCapacity([RESOURCE_ENERGY]) -targetFillContainer.store.getFreeCapacity([RESOURCE_ENERGY]));
                             if(creep.store.getCapacity([RESOURCE_ENERGY])-creep.store.getUsedCapacity([RESOURCE_ENERGY]) < withdrawAmountMax){
                                 var withdrawAmount = creep.store.getCapacity([RESOURCE_ENERGY])-creep.store.getUsedCapacity([RESOURCE_ENERGY]);     
                             }
@@ -151,7 +173,8 @@ var roleMule = {
                         }
                     }
                     else{
-                        console.log("Mule @ line 148 -> No Buildings to Fill, Creeps Requesting, Containers to Fill -> Going to Idle")
+                        //console.log("Mule @ line 176 -> No Buildings to Fill, Creeps Requesting, Containers to Fill -> Going to Idle")
+                        creep.moveTo(22,32);
                     }
                 }
                 else{
@@ -175,7 +198,7 @@ var roleMule = {
                 // requestingCreeps = array of creeps with requestingPickup = true
                 
                 var closestRequesting = creep.pos.findClosestByPath(requestingCreeps);
-                var muleDuplicatefillingTargets = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule' && (Game.getObjectById(creep.memory.closestRequesting)) == closestRequesting);
+                var muleDuplicatefillingTargets = _.filter(Game.creeps, (creep) => creep.memory.role == 'mule' && (Game.getObjectById(creep.memory.closestRequesting)) === closestRequesting);
                 var memory_closestRequesting = Game.getObjectById(creep.memory.closestRequesting);
                 //IF NO CLOSEST REQUESTING IN MEMORY BUT CREEPS REQUESTING -> SET MEMORY
                 if(!creep.memory.closestRequesting && requestingCreeps.length != 0){
@@ -195,11 +218,12 @@ var roleMule = {
                     else{
                         if(closestRequesting){
                             creep.memory.closestRequesting = closestRequesting.id;
+                            //console.log(creep.name+" I see no duplicate fill targets, so I set closest requesting creep to memory")
                         }
                     }
                 }
                 //IF CREEP HAS closestRequesting IN MEMORY
-                else{
+                else if(containers.length > 0){
                     //IF MORE REQUESTING THAN MULES
                     if(requestingCreeps.length > mules.length || requestingCreeps.length === mules.length){
                         //IF MULES HAVE THE SAME TARGET -> CHANGE fillingTargets
@@ -224,11 +248,12 @@ var roleMule = {
                             if (closestMule && creep.name === closestMule.name){
                                 if(creep.transfer(memory_closestRequesting, RESOURCE_ENERGY, 0) === ERR_NOT_IN_RANGE){
                                     creep.moveTo(memory_closestRequesting);
+                                    //console.log("Closest requesting to me: "+creep.name+ " is "+memory_closestRequesting)
                                 }
                             }
                             else{
                                 creep.memory.closestRequesting = closestRequesting.id;
-                                console.log("Not closest to creep but more mules than requesting")
+                                //console.log("Not closest to creep but more mules than requesting")
                                 creep.memory.collecting=false;
                             }
                         }

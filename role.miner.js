@@ -63,7 +63,7 @@ var roleMiner = {
                 }
                 //IF CONTAINER(S) PRESENT -> DROP INTO CONTAINER
                 else if(creep.memory.requestingPickup && containers.length > 0){
-                    if(creep.transfer(closestContainer,RESOURCE_ENERGY,50) === ERR_NOT_IN_RANGE){
+                    if(creep.transfer(closestContainer,RESOURCE_ENERGY) === ERR_NOT_IN_RANGE){
                         creep.moveTo(closestContainer);
                     }
                 }
@@ -100,6 +100,7 @@ var roleMiner = {
                     }
                 }
                 else if(creep.memory.requestingPickup === false) {
+
                     if(creep.harvest(closestAvailableSource == ERR_NOT_IN_RANGE)){
                         creep.moveTo(Game.getObjectById(creep.memory.sourceTarget));
                         creep.harvest(Game.getObjectById(creep.memory.sourceTarget));

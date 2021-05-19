@@ -123,7 +123,7 @@ module.exports.loop = function () {
             if(room.memory.stage === 'Charmander'){
                 console.log(room.name + ' Game Stage: Charmander');
                 //SPAWN LOGIC
-                var builders_wanted = 1;
+                var builders_wanted = 2;
                 var expanders_wanted = 1;
                 var upgraders_wanted = 2;
                 var defenders_wanted = 0;
@@ -158,7 +158,7 @@ module.exports.loop = function () {
                     console.log(room.name+ ' '+'Spawning new Mule!');
                     Game.spawns[spawn].createMuleCreep(energyA, 'mule');
                 }
-                else if(builders.length < builders_wanted && constructionSites.length > 0){
+                else if(builders.length < builders_wanted && (constructionSites.length > 0 || (room.energyAvailable > 400 && (_.filter(creep.room.find(FIND_STRUCTURES, (s) => s.structureType === STRUCTURE_RAMPART)).length > 0)))){
                     console.log(room.name+ ' '+'Spawning new Builder!');
                     Game.spawns[spawn].createCustomCreep(energyA, 'builder');
                 }
@@ -191,7 +191,7 @@ module.exports.loop = function () {
                 //SPAWN LOGIC
                 var builders_wanted = 1;
                 var expanders_wanted = 2;
-                var upgraders_wanted = 1;
+                var upgraders_wanted = 2;
                 var defenders_wanted = 1;
                 var claimers_wanted = 1;
                 var miners_wanted = 2;
@@ -259,11 +259,11 @@ module.exports.loop = function () {
             }
             //IF CONTAINER > 90% -> REQUESTINGENERGY FALSE
             if(container.store.getUsedCapacity([RESOURCE_ENERGY]) > (container.store.getCapacity([RESOURCE_ENERGY])*0.9)){
-                containersRequestingEnergy.splice(container);
+                containersRequestingEnergy.splice(container.id);
             }
         }
         room.memory.containersRequestingEnergy = containersRequestingEnergy;
-        console.log(containersRequestingEnergy)
+        //console.log(containersRequestingEnergy)
     }
         
     //Tower logic!
@@ -288,10 +288,17 @@ module.exports.loop = function () {
             }
             // If no injured friendly creeps, && no enemy creeps -> repair
             else{
-                repair_Target = _.filter(tower.room.find(FIND_MY_STRUCTURES), (s) => s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_RAMPART);
-                tower.repair(tower.pos.findClosestByPath(repair_Target));
+                var repair_target = tower.room.find(FIND_STRUCTURES, {
+    	            filter: (structure) => {
+    	                return(structure.hits <= (structure.hitsMax *0.9) && (structure.structureType === STRUCTURE_ROAD || structure.structureType === STRUCTURE_TOWER || structure.structureType === STRUCTURE_CONTAINER));
+    	            }
+    	        });
+                tower.repair(tower.pos.findClosestByPath(repair_target));
             }
-            
+        }
+        // IF THINGS NEED REPAIR -> REPAIR
+        if(tower.room){
+
         }
     }
 
