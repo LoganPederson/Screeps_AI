@@ -125,7 +125,7 @@ module.exports.loop = function () {
                 //SPAWN LOGIC
                 var builders_wanted = 2;
                 var expanders_wanted = 1;
-                var upgraders_wanted = 2;
+                var upgraders_wanted = 4;
                 var defenders_wanted = 1;
                 var claimers_wanted = 0;
                 var miners_wanted = 2;
@@ -174,7 +174,7 @@ module.exports.loop = function () {
                     console.log(room.name+ ' '+'Spawning new Sweeper!');
                     Game.spawns[spawn].createMuleCreep(energyA, 'sweeper');
                 }
-                else if(repairs.length < repairs_wanted){
+                else if(repairs.length < repairs_wanted && towers.length === 0){
                     console.log(room.name+ ' '+'Spawning new Repairer!!');
                     Game.spawns[spawn].createCustomCreep(energyA, 'repair');
                 }
@@ -214,7 +214,7 @@ module.exports.loop = function () {
                         }
                         else if(room.energyAvailable > 850){
                             console.log(room.name+ " Spawning efficient miner!")
-                            Game.spawns[spawn].spawnCreep([WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
+                            Game.spawns[spawn].spawnCreep([WORK,WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
                             );
                         }
                     }
