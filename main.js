@@ -126,7 +126,7 @@ module.exports.loop = function () {
                 var builders_wanted = 2;
                 var expanders_wanted = 1;
                 var upgraders_wanted = 2;
-                var defenders_wanted = 0;
+                var defenders_wanted = 1;
                 var claimers_wanted = 0;
                 var miners_wanted = 2;
                 var mules_wanted = 2;
@@ -183,16 +183,22 @@ module.exports.loop = function () {
                     Game.spawns[spawn].spawnCreep([MOVE,ATTACK,MOVE,ATTACK,TOUGH,TOUGH], 'defender '+Game.time,{memory:{role: 'defender' }})
                 }
             }
+            //EFFICIENT MINER RESPAWN WHEN ABLE
+            if(!Game.spawns[spawn].spawning && (room.energyAvailable > 850 && _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.hits < 1200 && creep.memory.role === 'miner').length > 0)){
+                let minersSmall = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.hits < 1200 && creep.memory.role === 'miner')
+                console.log("Room "+room.name+ " has more than 850 energy, and miners can be upgraded. Killing miner: "+minersSmall[0]);
+                minersSmall[0].suicide();
+            }
         }
 
             //CHARMELON LOGIC
             if(room.memory.stage === 'Charmeleon'){
                 console.log(room.name + ' Game Stage: Charmeleon');
                 //SPAWN LOGIC
-                var builders_wanted = 1;
-                var expanders_wanted = 2;
-                var upgraders_wanted = 2;
-                var defenders_wanted = 1;
+                var builders_wanted = 2;
+                var expanders_wanted = 1;
+                var upgraders_wanted = 1;
+                var defenders_wanted = 2;
                 var claimers_wanted = 1;
                 var miners_wanted = 2;
                 var mules_wanted = 3;
@@ -202,11 +208,12 @@ module.exports.loop = function () {
                 if(!Game.spawns[spawn].spawning && (room.energyAvailable > 299)){
                     // MINERS priority 0
                     if(miners.length < miners_wanted){
-                        if(room.energyAvailable < 850 && miners.length === 0 || mules.length){
+                        if(room.energyAvailable < 850){
                         console.log(room.name+ ' '+'Spawning new miner!');
                         Game.spawns[spawn].createMinerCreep(energyA, 'miner');
                         }
-                        else{
+                        else if(room.energyAvailable > 850){
+                            console.log(room.name+ " Spawning efficient miner!")
                             Game.spawns[spawn].spawnCreep([WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], 'miner '+Game.time,{memory:{role: 'miner' }}
                             );
                         }
@@ -223,7 +230,7 @@ module.exports.loop = function () {
                         console.log(room.name+ ' '+'Spawning new Upgrader!');
                         Game.spawns[spawn].createCustomCreep(energyA, 'upgrader');
                     }
-                    else if(builders.length < builders_wanted && constructionSites.length > 0){
+                    else if(builders.length < builders_wanted && (constructionSites.length > 0 || (room.energyAvailable > 400 && (_.filter(creep.room.find(FIND_STRUCTURES, (s) => s.structureType === STRUCTURE_RAMPART)).length > 0)))){
                         console.log(room.name+ ' '+'Spawning new Builder!');
                         Game.spawns[spawn].createCustomCreep(energyA, 'builder');
                     }
@@ -247,6 +254,12 @@ module.exports.loop = function () {
                     console.log(room.name+ ' '+'Spawning new Claimer!');
                     Game.spawns[spawn].spawnCreep([MOVE,WORK,CARRY,CLAIM,MOVE,MOVE], 'claimer '+Game.time,{memory:{role: 'claimer' }})
                     }
+                }
+                //EFFICIENT MINER RESPAWN WHEN ABLE
+                if(!Game.spawns[spawn].spawning && (room.energyAvailable > 850 && _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.hits < 1200 && creep.memory.role === 'miner').length > 0)){
+                    let minersSmall = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.hits < 1200 && creep.memory.role === 'miner')
+                    console.log("Room "+room.name+ " has more than 850 energy, and miners can be upgraded. Killing miner: "+minersSmall[0]);
+                    minersSmall[0].suicide();
                 }
             }
         }

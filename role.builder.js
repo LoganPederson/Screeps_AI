@@ -38,12 +38,11 @@ var roleBuilder = {
     	    if(creep.memory.building && creep.store.getUsedCapacity([RESOURCE_ENERGY]) != 0 && creep.room.find(FIND_CONSTRUCTION_SITES).length === 0) {
 
                 var rampartsNotFull = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_RAMPART && (s.hits < s.hitsMax));
-                console.log("rampartsNotFull: "+rampartsNotFull)
                 var rampartsTenOrLower = rampartsNotFull.filter(structure => structure.hits < (structure.hitsMax * 0.1));
-                console.log("rampartsTenOrLower: "+rampartsTenOrLower)
                 var rampartsThirtyOrLower = rampartsNotFull.filter(structure => structure.hits < (structure.hitsMax * 0.3));
                 var rampartsFiftyOrLower = rampartsNotFull.filter(structure => structure.hits < (structure.hitsMax * 0.5));
                 var rampartsEightyOrLower = rampartsNotFull.filter(structure => structure.hits < (structure.hitsMax * 0.8));
+                var memory_targetRampart = Game.getObjectById(creep.memory.targetRampart);
                 // Want to make it so that all ramparts are within 10% of eachothers hits, so check targetRampart compared to lowestRampart and highestRampart
                 if(rampartsTenOrLower.length > 0){
                     var targetRampart = creep.pos.findClosestByPath(rampartsTenOrLower);
@@ -65,8 +64,8 @@ var roleBuilder = {
                     var targetRampart = creep.pos.findClosestByPath(rampartsNotFull);
                     creep.memory.targetRampart = targetRampart.id;
                 }
-                if(creep.repair(Game.getObjectById(creep.memory.targetRampart) === ERR_NOT_IN_RANGE)){
-                    creep.moveTo(Game.getObjectById(creep.memory.targetRampart));
+                if(creep.repair(memory_targetRampart) === ERR_NOT_IN_RANGE){
+                    creep.moveTo(memory_targetRampart);
                 }
     	    }
             // IF BUILDING && NOT OUT OF ENERGY && NO BUILD JOBS TO DO && NO RAMPARTS NEED UPGRADING -> REPAIR!

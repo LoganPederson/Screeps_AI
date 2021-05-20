@@ -4,7 +4,7 @@ var roleMiner = {
     run: function(creep) {
 
         //SOURCE SERIALIZATION LOGIC
-        if(creep.spawning == false){
+        if(creep.spawning === false){
             const roomSources = creep.room.memory.sources;
 
             let serializedSources = [];
@@ -106,10 +106,10 @@ var roleMiner = {
                         creep.harvest(Game.getObjectById(creep.memory.sourceTarget));
                     }
                 }
-                // if(!creep.memory.requestingPickup && creep.store.getUsedCapacity([RESOURCE_ENERGY]) === 0) {
-                //     creep.memory.requestingPickup = false;
-                //     creep.say('Mining');
-                // }
+                if(!creep.memory.requestingPickup && creep.store.getUsedCapacity([RESOURCE_ENERGY]) === 0) {
+                    creep.memory.requestingPickup = false;
+                    creep.say('Mining');
+                }
             }
         }
     }

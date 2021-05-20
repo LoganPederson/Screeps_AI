@@ -47,8 +47,8 @@ var roleRepair = {
                     else{
                         creep.repair(memory_repairTarget);
                     }
-                    if(memory_repairTarget.hits > (memory_repairTarget.hitsMax * 0.95)){
-                        if(repair_target.length > 0){
+                    if(memory_repairTarget.hits > (memory_repairTarget.hitsMax * 0.95) && repair_target.length > 0){
+                        if(closest_repair){
                             creep.memory.repairTarget = closest_repair.id;
                         }
                         else{
@@ -58,7 +58,7 @@ var roleRepair = {
                 }
                 // If repairTarget not in memory, or target in memory has max hits set it
                 else{
-                    if(repair_target.length > 0){
+                    if(repair_target.length > 0 && closest_repair){
                         creep.memory.repairTarget = closest_repair.id;
                     }
                 }    
