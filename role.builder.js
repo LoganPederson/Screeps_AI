@@ -46,7 +46,9 @@ var roleBuilder = {
                 // Want to make it so that all ramparts are within 10% of eachothers hits, so check targetRampart compared to lowestRampart and highestRampart
                 if(rampartsTenOrLower.length > 0){
                     var targetRampart = creep.pos.findClosestByPath(rampartsTenOrLower);
+                    if(targetRampart != null){
                     creep.memory.targetRampart = targetRampart.id;
+                    }
                 }
                 else if(rampartsThirtyOrLower.length > 0){
                     var targetRampart = creep.pos.findClosestByPath(rampartsThirtyOrLower);

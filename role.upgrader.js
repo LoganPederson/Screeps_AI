@@ -48,8 +48,8 @@ var roleUpgrader = {
             //IF NO MULES -> HARVEST SOURCE
             else if(mulesInRoom.length === 0){
                 sources = creep.room.find(FIND_SOURCES_ACTIVE);
-                if(creep.harvest(sources[0]) === ERR_NOT_IN_RANGE){
-                    creep.moveTo(sources[0]);
+                if(creep.harvest(creep.pos.findClosestByPath(sources)) === ERR_NOT_IN_RANGE){
+                    creep.moveTo(creep.pos.findClosestByPath(sources));
                 }
             }
         }

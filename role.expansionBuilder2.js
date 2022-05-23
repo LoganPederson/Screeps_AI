@@ -1,4 +1,4 @@
-var roleExpansionBuilder = {
+var roleExpansionBuilder2 = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
@@ -19,8 +19,9 @@ var roleExpansionBuilder = {
         var closest_container = creep.pos.findClosestByPath(containers);
         var blueFlags = _.filter(Game.flags, (f) => f.color === COLOR_BLUE);
         var blueFlag = blueFlags[0];
-        var yellowFlags = _.filter(Game.flags, (f) => f.color === COLOR_YELLOW);
-        var yellowFlag = yellowFlags[0];
+        var greenFlags = _.filter(Game.flags, (f) => f.color === COLOR_GREEN);
+        var greenFlag = greenFlags[0];
+
         
         //Make sure we didn't get lost
         if(creep.memory.correctRoom){
@@ -81,13 +82,13 @@ var roleExpansionBuilder = {
     	    }
         }
         // IF NO correctRoom in memory yet -> Go To Yellow Flag
-        else if (yellowFlags.length>0){
-            creep.moveTo(yellowFlag);
+        else if (greenFlags.length>0){
+            creep.moveTo(greenFlag);
             //IF ON YELLOW FLAG -> SET correctRoom
-            if(creep.pos.x === yellowFlag.pos.x && creep.pos.y === yellowFlag.pos.y){
+            if(creep.pos.x === greenFlag.pos.x && creep.pos.y === greenFlag.pos.y){
             creep.memory.correctRoom = true;
         }
-        else if(yellowFlags.length === 0){
+        else if(greenFlags.length === 0){
             //creep.suicide();
             console.log(creep.name+' Tried to suicide!');
         }
@@ -95,4 +96,4 @@ var roleExpansionBuilder = {
 	}
 };
 
-module.exports = roleExpansionBuilder;
+module.exports = roleExpansionBuilder2;

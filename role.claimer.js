@@ -4,7 +4,8 @@ var roleClaimer = {
 
         //VARIABLES
         var blueFlags = _.filter(Game.flags, (f) => f.color === COLOR_BLUE);
-        var blueFlag = blueFlags[0];
+        let claimers = _.filter(Game.creeps, (c) => c.memory.role === 'claimer');
+        var blueFlag = blueFlags[(claimers.length-1)];
         
         
         //IF NO claimRoom IN MEMORY SET IT TO ROOM CONTAINING BLUE FLAG
