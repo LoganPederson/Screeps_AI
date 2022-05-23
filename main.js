@@ -1,6 +1,7 @@
 // Import requirments
-const requirements = require('./requirements');
-var roleMiner = requirements.roleMiner
+let requirements = require('requirements');
+console.log (requirements);
+
 
 const roleMule = requirements.roleMule
 const roleUpgrader = requirements.roleUpgrader
