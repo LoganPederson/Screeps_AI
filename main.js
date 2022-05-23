@@ -2,7 +2,7 @@
 let requirements = require('requirements');
 console.log (requirements);
 
-
+const roleMiner = requirements.roleMiner
 const roleMule = requirements.roleMule
 const roleUpgrader = requirements.roleUpgrader
 const roleBuilder = requirements.roleBuilder 
