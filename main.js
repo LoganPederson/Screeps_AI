@@ -1,22 +1,22 @@
-// Import Modules
-var roleMiner = require('role.miner');
-var roleMule = require('role.mule');
-var roleUpgrader = require('role.upgrader');
-var roleBuilder = require('role.builder');
-var roleExpansionBuilder = require('role.expansionBuilder');
-var roleSweeper = require('role.sweeper');
-var roleRepair = require('role.repair');
-var roleDefender = require('role.defender');
-var roleClaimer = require('role.claimer');
-var prototypeMinerSpawn = require('prototype.minerBody')();
-var prototypeMuleSpawn = require('prototype.muleBody')();
-var prototypeCustomSpawn = require('prototype.customCreep')();
-var prototypeDefenderSpawn = require('prototype.evenDefender')();
+// Import requirments
+const requirements = require('./requirements');
+var roleMiner = requirements.roleMiner
 
-//
+const roleMule = requirements.roleMule
+const roleUpgrader = requirements.roleUpgrader
+const roleBuilder = requirements.roleBuilder 
+const roleExpansionBuilder = requirements.roleExpansionBuilder 
+const roleSweeper = requirements.roleSweeper
+const roleRepair = requirements.roleRepair
+const roleDefender = requirements.roleDefender
+const roleClaimer = requirements.roleClaimer
+// const prototypeMinerSpawn = requirements.prototypeMinerSpawn
+// const prototypeMuleSpawn = requirements.prototypeMuleSpawn
+// const prototypeCustomSpawn = requirements.prototypeCustomSpawn
+// const prototypeDefenderSpawn = requirements.prototypeDefenderSpawn
 //Run Each tick
 module.exports.loop = function () {
-    
+
     //Delete old creeps from memory
     for(var i in Memory.creeps) {
         if(!Game.creeps[i]) {
