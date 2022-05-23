@@ -1,17 +1,7 @@
-// Import Modules
-var roleMiner = require('role.miner');
-var roleMule = require('role.mule');
-var roleUpgrader = require('role.upgrader');
-var roleBuilder = require('role.builder');
-var roleExpansionBuilder = require('role.expansionBuilder');
-var roleSweeper = require('role.sweeper');
-var roleRepair = require('role.repair');
-var roleDefender = require('role.defender');
-var roleClaimer = require('role.claimer');
-var prototypeMinerSpawn = require('prototype.minerBody')();
-var prototypeMuleSpawn = require('prototype.muleBody')();
-var prototypeCustomSpawn = require('prototype.customCreep')();
-var prototypeDefenderSpawn = require('prototype.evenDefender')();
+// Import requirments
+let requirements = require('requirements.js');
+console.log (requirements);
+
 
 //
 //Run Each tick
