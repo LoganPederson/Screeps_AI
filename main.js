@@ -148,7 +148,8 @@ module.exports.loop = function () {
                 var defenders_wanted = 0;
                 var claimers_wanted = 0;
                 var miners_wanted = 2;
-                var mules_wanted = 2;
+                var mules_wanted = 0;
+                var mules2_wanted = 2;
                 var repairs_wanted = 0;
                 var sweepers_wanted = 0;
                 
@@ -176,6 +177,10 @@ module.exports.loop = function () {
                 else if(mules.length < mules_wanted){
                     console.log(room.name+ ' '+'Spawning new Mule!');
                     Game.spawns[spawn].createMuleCreep(energyA, 'mule');
+                }
+                else if(mules2.length < mules2_wanted){
+                    console.log(room.name+ ' '+'Spawning new Mule2!');
+                    Game.spawns[spawn].createMuleCreep(energyA, 'mule2');
                 }
                 else if(builders.length < builders_wanted && (constructionSites.length > 0 || (room.energyAvailable > 400 && (_.filter(creep.room.find(FIND_STRUCTURES, (s) => s.structureType === STRUCTURE_RAMPART)).length > 0)))){
                     console.log(room.name+ ' '+'Spawning new Builder!');

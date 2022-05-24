@@ -30,23 +30,36 @@ var roleMule2 = {
         }
         //IF COLLECTING
         if(creep.memory.collecting){
-            // IF COLLECTING TARGET IS FULL -> DELETE IT! OTHERWISE GO GET SUM ENERGY 
+            // IF COLLECTING TARGET IS Empty -> DELETE IT! OTHERWISE GO GET SUM ENERGY 
             if(creep.memory.collectingTarget){
-                if(Game.getObjectById(creep.memory.collectingTarget).store.getUsedCapacity([RESOURCE_ENERGY]) === 0){
-                    delete creep.memory.collectingTarget;
-                }
-                else if(creep.memory.fillingTarget){
-                    if(creep.memory.collectingTarget === creep.memory.fillingTarget){
+                if((Game.getObjectById(creep.memory.collectingTarget)) != null){
+                    if(Game.getObjectById(creep.memory.collectingTarget).store.getUsedCapacity([RESOURCE_ENERGY]) === 0){
                         delete creep.memory.collectingTarget;
                     }
                 }
                 else{
+                    delete creep.memory.collectingTarget;
+                }
+                if(creep.memory.fillingTarget){
+                    if(creep.memory.collectingTarget === creep.memory.fillingTarget){
+                        delete creep.memory.collectingTarget;
+                    }
+                }
+                else if(containersAll.length > 0 || storagesAll.length > 0){
                     if(creep.withdraw(Game.getObjectById(creep.memory.collectingTarget), RESOURCE_ENERGY) === ERR_NOT_IN_RANGE){
                         creep.moveTo(Game.getObjectById(creep.memory.collectingTarget));
                     }
+                    else{
+                        creep.moveTo(Game.getObjectById(creep.memory.collectingTarget));
+                    }
                 }
-            }
+                // else if(creep.memory.collectingTarget != undefined){
+                //     if(creep.moveTo(Game.getObjectById(creep.memory.collectingTarget)) === ERR_NO_PATH){
+                //         creep.moveTo(Game.getObjectById(creep.memory.collectingTarget));
+                //     }
+                }
             if(!creep.memory.collectingTarget){
+                console.log('creep collecting, but has no collectingTarget')
                 //IF STORAGES IN ROOM && 40% OR MORE -> SET TO MEMORY
                 let closestStorage = creep.pos.findClosestByPath(storagesWithEnergy);
                 if(storagesWithEnergy.length > 0 && (closestStorage.store.getUsedCapacity([RESOURCE_ENERGY]) > (closestStorage.store.getCapacity([RESOURCE_ENERGY]) * 0.9))){
@@ -54,7 +67,7 @@ var roleMule2 = {
                     creep.memory.collectingTarget = closestStorage.id;
                 }
 
-                else if(containersWithEnergy.length >= 0){
+                else if(containersWithEnergy.length >0){ // Should this be >= or just =?
                     console.log(creep.room.name+" "+creep.name+' '+containersWithEnergy.length)
                     if(containersOverflowingEnergy.length > 0){
                         let closestContainerOverflowingEnergy = creep.pos.findClosestByPath(containersOverflowingEnergy);
@@ -80,7 +93,8 @@ var roleMule2 = {
                 else if(creepsRequesting.length > 0){
                     let closestRequesting = creep.pos.findClosestByPath(creepsRequesting);
                     let mulesWithCollectingTargetsSet = mules2.filter(x => x.memory.collectingTarget);
-                    if(mulesWithCollectingTargetsSet){
+                    creep.memory.collectingTarget = closestRequesting.id;
+                    if(mulesWithCollectingTargetsSet.length>0){
                         let collectingTargetsSet = mulesWithCollectingTargetsSet.forEach(m => m.memory.collectingTarget);
                         let creepsRequestingNotTargeted = creepsRequesting.splice(collectingTargetsSet);
                         // IF MORE CREEPS REQUESTING PICKUP THAN MULES -> ONLY 1 MULE PER TARGET
@@ -89,9 +103,16 @@ var roleMule2 = {
                                 creep.memory.collectingTarget = closestRequesting.id
                             }
                             else{
+                                console.log(creep.pos.findClosestByPath(creepsRequestingNotTargeted).id)
                                 creep.memory.collectingTarget = (creep.pos.findClosestByPath(creepsRequestingNotTargeted).id);
                             }
                         }
+                        else{
+                            creep.memory.collectingTarget = closestRequesting.id;
+                        }
+                    }
+                    else{
+                        creep.memory.collectingTarget = closestRequesting.id;
                     }
                 }
             }
@@ -165,7 +186,7 @@ var roleMule2 = {
 
 
     }
-}
+};
 
 
 module.exports = roleMule2;

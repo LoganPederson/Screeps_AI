@@ -164,7 +164,7 @@ var roleMule = {
                 var muleDuplicatefillingTargets = _.filter(Game.creeps, (creep) => creep.memory.role === 'mule' && (Game.getObjectById(creep.memory.closestRequesting)) === closestRequesting);
                 var memory_closestRequesting = Game.getObjectById(creep.memory.closestRequesting);
                 //IF NO CLOSEST REQUESTING IN MEMORY BUT CREEPS REQUESTING -> SET MEMORY
-                if(!creep.memory.closestRequesting && requestingCreeps.length != 0){
+                if(creep.memory.closestRequesting == undefined && requestingCreeps.length != 0){
                     //IF OTHER MULE HAS SAME TARGET SET, CHOOSE FURTHER TARGET TO MEMORY
                     if(muleDuplicatefillingTargets.length > 1){
                         // console.log("Guess there's duplicates 170")

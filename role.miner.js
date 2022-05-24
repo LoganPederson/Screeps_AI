@@ -13,24 +13,26 @@ var roleMiner = {
                 serializedSources.push(Game.getObjectById(roomSources[i]))
                 var i = i+1;
             }
+            console.log('serializedSources: ' + serializedSources);
             let closestSource = creep.pos.findClosestByPath(serializedSources);
             let assignedMiners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role === 'miner' && creep.memory.creepRoom === creep.room.name && creep.memory.sourceTarget);
+            console.log('assignedMiners: ' + assignedMiners);
             // .map returns an array doing the specified function to each in the array, in this case returns the array back with only the values returning true for not containing an assigned source's id
             let assignedSources = assignedMiners.map(c => c.memory.sourceTarget);
+            console.log('assignedSources: ' + assignedSources);
             let freeSources = roomSources.filter(id => !_.contains(assignedSources, id));
+            console.log('freeSources: ' + freeSources);
             serializedFreeSources = [];
             var b = 0;
             for(let everySource in freeSources){
                 serializedFreeSources.push(Game.getObjectById(freeSources[b]))
                 var b = b+1;
             }
-
             let closestAvailableSource = creep.pos.findClosestByPath(serializedFreeSources);
             var miners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role === 'miner');
-            if(creep.memory.sourceTarget != true){
-                // if(roomSources.length > 1 && miners.length > 0 && serializedFreeSources.length > 0 && closestAvailableSource){
-                //     creep.memory.sourceTarget = closestAvailableSource.id;  
-                // }
+            console.log('sourceTarget = ' + creep.memory.sourceTarget);
+            if(creep.memory.sourceTarget == undefined){
+                console.log('bet this prints')
                 if(closestAvailableSource){
                     // console.log("closest source to miner is: "+closestSource);
                     creep.memory.sourceTarget = closestAvailableSource.id;
