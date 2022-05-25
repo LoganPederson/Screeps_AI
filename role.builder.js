@@ -18,7 +18,7 @@ var roleBuilder = {
         var containers = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_CONTAINER && s.store.getUsedCapacity([RESOURCE_ENERGY]) != 0);
         var closest_container = creep.pos.findClosestByPath(containers);
         var creepsInRoomArray = creep.room.find(FIND_MY_CREEPS)
-        var mulesInRoom = _.filter(creepsInRoomArray, (creep) => creep.memory.role == 'mule');
+        var mulesInRoom = _.filter(creepsInRoomArray, (creep) => creep.memory.role == 'mule2' || creep.memory.role === 'mule');
         var rampartsNotFull = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_RAMPART && (s.hits < s.hitsMax));
         //Make sure we didn't get lost
         if(creep.memory.creepRoom){

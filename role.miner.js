@@ -13,15 +13,15 @@ var roleMiner = {
                 serializedSources.push(Game.getObjectById(roomSources[i]))
                 var i = i+1;
             }
-            console.log('serializedSources: ' + serializedSources);
+            // console.log('serializedSources: ' + serializedSources);
             let closestSource = creep.pos.findClosestByPath(serializedSources);
             let assignedMiners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role === 'miner' && creep.memory.creepRoom === creep.room.name && creep.memory.sourceTarget);
-            console.log('assignedMiners: ' + assignedMiners);
+            // console.log('assignedMiners: ' + assignedMiners);
             // .map returns an array doing the specified function to each in the array, in this case returns the array back with only the values returning true for not containing an assigned source's id
             let assignedSources = assignedMiners.map(c => c.memory.sourceTarget);
-            console.log('assignedSources: ' + assignedSources);
+            // console.log('assignedSources: ' + assignedSources);
             let freeSources = roomSources.filter(id => !_.contains(assignedSources, id));
-            console.log('freeSources: ' + freeSources);
+            // console.log('freeSources: ' + freeSources);
             serializedFreeSources = [];
             var b = 0;
             for(let everySource in freeSources){
@@ -30,7 +30,7 @@ var roleMiner = {
             }
             let closestAvailableSource = creep.pos.findClosestByPath(serializedFreeSources);
             var miners = _.filter(creep.room.find(FIND_MY_CREEPS), (creep) => creep.memory.role === 'miner');
-            console.log('sourceTarget = ' + creep.memory.sourceTarget);
+            // console.log('sourceTarget = ' + creep.memory.sourceTarget);
             if(creep.memory.sourceTarget == undefined){
                 console.log('bet this prints')
                 if(closestAvailableSource){
@@ -60,7 +60,7 @@ var roleMiner = {
                 //IF NO CONTAINERS -> REQUEST MULE PICKUP
                 if(creep.memory.requestingPickup && containers.length === 0){
                     var pickupTarget = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
-                        filter: { memory: { role: 'mule' } }
+                        filter: { memory: { role: 'mule2' } }
                     });
                     //var containerTarget = _.filter(creep.pos.findClosestByRange(FIND_STRUCTURES), (s) => s.structureType == STRUCTURE_CONTAINER);
                     creep.transfer(pickupTarget, RESOURCE_ENERGY);

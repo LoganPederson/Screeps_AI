@@ -30,15 +30,17 @@ var roleMule2 = {
         }
         //IF COLLECTING
         if(creep.memory.collecting){
-            // IF COLLECTING TARGET IS Empty -> DELETE IT! OTHERWISE GO GET SUM ENERGY 
-            if(creep.memory.collectingTarget){
+            //IF COLLECTING TARGET IS EMPTY -> DELETE COLLECTING TARGET FROM MEMORY
+            if(creep.memory.collectingTarget != undefined){
                 if((Game.getObjectById(creep.memory.collectingTarget)) != null){
                     if(Game.getObjectById(creep.memory.collectingTarget).store.getUsedCapacity([RESOURCE_ENERGY]) === 0){
                         delete creep.memory.collectingTarget;
                     }
-                }
-                else{
-                    delete creep.memory.collectingTarget;
+                    else{
+                        if (creep.moveTo(Game.getObjectById(creep.memory.collectingTarget)) === ERR_NO_PATH){
+                            console.log(creep.name+' no path to collectingTarget in memory!');
+                        }
+                    } //refactor layout
                 }
                 if(creep.memory.fillingTarget){
                     if(creep.memory.collectingTarget === creep.memory.fillingTarget){
@@ -120,7 +122,7 @@ var roleMule2 = {
         //NOT COLLECTING
         else{
             // IF MEMORY TARGET HAS ROOM FOR ENERGY -> DELIVER! IF NOT, DELETE FROM MEMORY SO ANOTHER GETS SET
-            if(creep.memory.fillingTarget){
+            if(creep.memory.fillingTarget != null){
                 if(Game.getObjectById(creep.memory.fillingTarget).store.getFreeCapacity([RESOURCE_ENERGY]) === 0 || (Game.getObjectById(creep.memory.fillingTarget).store.getFreeCapacity([RESOURCE_ENERGY]) >= (Game.getObjectById(creep.memory.fillingTarget).store.getFreeCapacity([RESOURCE_ENERGY]) * 0.9) && Game.getObjectById(creep.memory.fillingTarget).structureType === STRUCTURE_STORAGE) ){
                     delete creep.memory.fillingTarget;
                 }
