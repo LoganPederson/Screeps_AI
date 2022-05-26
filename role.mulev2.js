@@ -47,12 +47,14 @@ var roleMule2 = {
                         delete creep.memory.collectingTarget;
                     }
                 }
-                else if(containersAll.length > 0 || storagesAll.length > 0){
+                if(containersAll.length > 0 || storagesAll.length > 0){
                     if(creep.withdraw(Game.getObjectById(creep.memory.collectingTarget), RESOURCE_ENERGY) === ERR_NOT_IN_RANGE){
                         creep.moveTo(Game.getObjectById(creep.memory.collectingTarget));
+                        
                     }
                     else{
-                        creep.moveTo(Game.getObjectById(creep.memory.collectingTarget));
+                        creep.withdraw(Game.getObjectById(creep.memory.collectingTarget), RESOURCE_ENERGY);
+                        
                     }
                 }
                 // else if(creep.memory.collectingTarget != undefined){

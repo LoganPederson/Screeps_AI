@@ -4,7 +4,7 @@ var roleMiner = {
     run: function(creep) {
 
         //SOURCE SERIALIZATION LOGIC
-        if(creep.spawning === false){
+        if(creep.spawning === false){ // do we need this?   
             const roomSources = creep.room.memory.sources;
 
             let serializedSources = [];

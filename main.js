@@ -27,7 +27,62 @@ module.exports.loop = function () {
             delete Memory.creeps[i];
         }
     }
-    
+    for (let room in Game.rooms) {
+        //console.log(room);
+        let thisroom = Game.rooms[room];
+        let sourcesInRoom = thisroom.find(FIND_SOURCES);
+        var availableSpotsToMine = [];
+        for (let source in sourcesInRoom) {
+            let thisSource = sourcesInRoom[source];
+            let availableSpots = [];
+            let topLeft = [thisSource.pos.x-1, thisSource.pos.y-1];
+            let topRight = [thisSource.pos.x+1, thisSource.pos.y-1];
+            let bottomLeft = [thisSource.pos.x-1, thisSource.pos.y+1];
+            let bottomRight = [thisSource.pos.x+1, thisSource.pos.y+1];
+            let top = [thisSource.pos.x, thisSource.pos.y-1];
+            let bottom = [thisSource.pos.x, thisSource.pos.y+1];
+            let left = [thisSource.pos.x-1, thisSource.pos.y];
+            let right = [thisSource.pos.x+1, thisSource.pos.y];
+            let topLeftAvailable = thisroom.lookForAt(LOOK_TERRAIN, topLeft[0],topLeft[1]) == 'plain';
+            let topRightAvailable = thisroom.lookForAt(LOOK_TERRAIN, topRight[0], topRight[1]) == 'plain';
+            let bottomLeftAvailable = thisroom.lookForAt(LOOK_TERRAIN, bottomLeft[0], bottomLeft[1]) == 'plain';
+            let bottomRightAvailable = thisroom.lookForAt(LOOK_TERRAIN, bottomRight[0], bottomRight[1]) == 'plain';
+            let topAvailable = thisroom.lookForAt(LOOK_TERRAIN, top[0], top[1]) == 'plain';
+            let bottomAvailable = thisroom.lookForAt(LOOK_TERRAIN, bottom[0], bottom[1]) == 'plain';
+            let leftAvailable = thisroom.lookForAt(LOOK_TERRAIN, left[0], left[1]) == 'plain';
+            let rightAvailable = thisroom.lookForAt(LOOK_TERRAIN, right[0], right[1]) == 'plain';
+            if (topLeftAvailable) {
+                availableSpots.push(topLeft);
+            }
+            if (topRightAvailable) {
+                availableSpots.push(topRight);
+            }
+            if (bottomLeftAvailable) {
+                availableSpots.push(bottomLeft);
+            }
+            if (bottomRightAvailable) {
+                availableSpots.push(bottomRight);
+            }
+            if (topAvailable) {
+                availableSpots.push(top);
+            }
+            if (bottomAvailable) {
+                availableSpots.push(bottom);
+            }
+            if (leftAvailable) {
+                availableSpots.push(left);
+            }
+            if (rightAvailable) {
+                availableSpots.push(right);
+            }
+            console.log('spots available near: '+ thisSource+ ' '+availableSpots);
+            availableSpotsToMine.push([thisSource, availableSpots]);
+            // create hash map of available spots to mine with source as key and array of available spots as value
+            
+        }
+
+        console.log([availableSpotsToMine]);
+    }
     // Run for each Creep
     for(let creepName in Game.creeps) {
         var creep = Game.creeps[creepName];
