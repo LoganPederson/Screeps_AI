@@ -13,9 +13,11 @@ var roleDefender = {
         else{
             creep.memory.attacking = false;
         }
+        // TO DO set last known location into memory as place to go if no enemies in room 
         if(creep.memory.attacking){
             if(creep.attack(attack_target) === ERR_NOT_IN_RANGE){
                 creep.moveTo(attack_target);
+                console.log('Attacker Creep: '+creep.name+' is attacking '+attack_target.name+' in room: '+creep.room.name)
             }
             if(rampartsAvailable.length > 0 && creep.pos != closestRampart.pos || creep.pos != closest_rampart_to_defender.pos){
                 // creep.moveTo(closestRampart);
@@ -23,9 +25,9 @@ var roleDefender = {
             else if(rampartsAvailable.length === 0){
                 creep.say("All Ramparts Occupied!")
             }
-            if(creep.pos === closestRampart.pos){
-                creep.attack(attack_target);
-            }
+            // if(creep.pos === closestRampart.pos){
+            //     creep.attack(attack_target);
+            // }
         }
         // If memory attacking not true
         else{
@@ -57,7 +59,7 @@ var roleDefender = {
                     }
                     else{
                         creep.moveTo(20,15);
-                        creep.say('No room for me I gues');
+                        creep.say('No Ramparts Available');
                     }
                 }
             }

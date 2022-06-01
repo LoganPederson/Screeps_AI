@@ -12,11 +12,23 @@ var roleMule2 = {
         let containersOverflowingEnergy = _.filter(creep.room.find(FIND_STRUCTURES),s => s.structureType === STRUCTURE_CONTAINER && s.store.getUsedCapacity([RESOURCE_ENERGY]) > 1800);
         let creepsRequesting = _.filter(creep.room.find(FIND_MY_CREEPS), (c) => c.memory.requestingPickup === true);
         let creepsRequestingEnergy = _.filter(creep.room.find(FIND_MY_CREEPS), (c) => c.memory.requestingEnergy === true);
+        let unassignedCreepsRequestingEnergy = creepsRequestingEnergy
+        let mulesCollecting = _.filter(creep.room.find(FIND_MY_CREEPS), (c) => c.memory.role === 'mule2' && c.memory.collecting === true);
         let fillingTargets = _.filter(creep.room.find(FIND_STRUCTURES),(s) => (s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_TOWER)  && s.store.getFreeCapacity([RESOURCE_ENERGY]) != 0)
         let storagesAll = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_STORAGE);
         let storagesWithEnergy = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_STORAGE && s.store.getUsedCapacity([RESOURCE_ENERGY]) > (s.store.getCapacity([RESOURCE_ENERGY])*0.4));
         let storagesFull = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_STORAGE && s.store.getFreeCapacity([RESOURCE_ENERGY]) === 0);
         let storagesNotFull = _.filter(creep.room.find(FIND_STRUCTURES), (s) => s.structureType === STRUCTURE_STORAGE && s.store.getFreeCapacity([RESOURCE_ENERGY]) > 0);
+
+        let collectingTargetsAlreadySet = [];
+        for (let m in mulesCollecting) {
+            collectingTargetsAlreadySet.push(mulesCollecting[m].memory.collectingTarget); // create array of ID of targets already set by existing mules
+        }
+        // filter collecting targets by collectingTargetsAlreadySet array
+        let creepsRequestingNotTargeted = _.filter(creepsRequesting, (c) => !collectingTargetsAlreadySet.includes(c.id));
+        console.log('creepsRequesting = '+ creepsRequesting);
+        console.log('creepsRequestingNotTargeted = ' + creepsRequestingNotTargeted);
+
 
 
         //IF NOT COLLECTING AND NO ENERGY -> COLLECT
@@ -40,11 +52,13 @@ var roleMule2 = {
                         if (creep.moveTo(Game.getObjectById(creep.memory.collectingTarget)) === ERR_NO_PATH){
                             console.log(creep.name+' no path to collectingTarget in memory!');
                         }
+                        
                     } //refactor layout
                 }
                 if(creep.memory.fillingTarget){
                     if(creep.memory.collectingTarget === creep.memory.fillingTarget){
-                        delete creep.memory.collectingTarget;
+                        delete creep.memory.fillingTarget;
+                        console.log('testing?')
                     }
                 }
                 if(containersAll.length > 0 || storagesAll.length > 0){
@@ -124,7 +138,7 @@ var roleMule2 = {
         //NOT COLLECTING
         else{
             // IF MEMORY TARGET HAS ROOM FOR ENERGY -> DELIVER! IF NOT, DELETE FROM MEMORY SO ANOTHER GETS SET
-            if(creep.memory.fillingTarget != null){
+            if(Game.getObjectById(creep.memory.fillingTarget) != null){
                 if(Game.getObjectById(creep.memory.fillingTarget).store.getFreeCapacity([RESOURCE_ENERGY]) === 0 || (Game.getObjectById(creep.memory.fillingTarget).store.getFreeCapacity([RESOURCE_ENERGY]) >= (Game.getObjectById(creep.memory.fillingTarget).store.getFreeCapacity([RESOURCE_ENERGY]) * 0.9) && Game.getObjectById(creep.memory.fillingTarget).structureType === STRUCTURE_STORAGE) ){
                     delete creep.memory.fillingTarget;
                 }

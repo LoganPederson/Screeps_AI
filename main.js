@@ -17,7 +17,6 @@ var prototypeMuleSpawn = require('prototype.muleBody')();
 var prototypeCustomSpawn = require('prototype.customCreep')();
 var prototypeDefenderSpawn = require('prototype.evenDefender')();
 
-//
 //Run Each tick
 module.exports.loop = function () {
     
@@ -155,7 +154,7 @@ module.exports.loop = function () {
             var upgraders = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'upgrader' && creep.memory.creepRoom == room.name);
             var defenders = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'defender' && creep.memory.creepRoom == room.name);
             var attackers = room.find(FIND_HOSTILE_CREEPS);
-            var myAttackers = _.filter(Game.creps, (creep) => creep.memory.role === 'attacker');
+            var myAttackers = _.filter(Game.creeps, (creep) => creep.memory.role === 'attacker');
             var claimers = _.filter(Game.creeps, (creep) => creep.memory.role == 'claimer');
             var miners = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'miner' && creep.memory.creepRoom == room.name);
             var mules = _.filter(room.find(FIND_MY_CREEPS), (creep) => creep.memory.role == 'mule' && creep.memory.creepRoom == room.name);
@@ -172,10 +171,10 @@ module.exports.loop = function () {
             var containersRequestingEnergy = [];
             // Assign stage based on controllerLevel
             let controllerLevel = room.controller.level;
-            if(controllerLevel < 4){
+            if(controllerLevel < 3){
                 room.memory.stage = 'Charmander'
             }
-            if(controllerLevel >= 4 && controllerLevel < 7){
+            if(controllerLevel >= 3 && controllerLevel < 7){
                 room.memory.stage = 'Charmeleon'
             }
             if(controllerLevel > 7){
@@ -279,17 +278,17 @@ module.exports.loop = function () {
                 console.log(room.name + ' Game Stage: Charmeleon');
                 //SPAWN LOGIC
                 var builders_wanted = 1;
-                var expanders_wanted = 3;
+                var expanders_wanted = 0;
                 var expanders2_wanted = 0;
                 var upgraders_wanted = 1;
-                var defenders_wanted = 2;
-                var claimers_wanted = 1;
+                var defenders_wanted = 0;
+                var claimers_wanted = 0;
                 var miners_wanted = 2;
-                var mules_wanted = 1;
+                var mules_wanted = 0;
                 var mules2_wanted = 2;
                 var repairs_wanted = 0;
                 var sweepers_wanted = 0;
-                var myAttackers_wanted = 5; 
+                var myAttackers_wanted = 0; 
         
                 if(!Game.spawns[spawn].spawning && (room.energyAvailable > 299)){
                                    // MINERS priority 0

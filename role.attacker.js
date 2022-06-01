@@ -32,7 +32,7 @@ var roleAttacker = {
         else{
             //If enemy creeps -> kill kill kill
             if(enemyCreepsInRoom.length > 0){
-                if(creep.attack(closestEnemyCreep) === ERR_NOT_IN_RANGE){
+                if(creep.attack(closestEnemyCreep) === ERR_NOT_IN_RANGE || creep.attack(closestEnemyCreep) === ERR_NO_BODYPART){
                     creep.moveTo(closestEnemyCreep);
                 }
             }
